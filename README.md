@@ -1,5 +1,26 @@
 # ShipShape
 
-ShipShape is a web-based tool that helps developers check whether their web applications are ready for deployment. It checks basic URL accessibility, HTTPS usage, response time, security headers, and Docker configuration files.
+## Project Description
 
-The goal is to make common deployment issues easier to identify by providing clear results, explanations, and suggested fixes.
+Preparing a web application for deployment can involve several checks, such as verifying website accessibility, HTTPS usage, security headers, and Docker configuration. Developers may overlook some of these issues before publishing their applications. ShipShape aims to make these basic checks easier to perform in one place.
+
+## Objective
+
+The objective of ShipShape is to develop a web-based tool that helps developers identify potential issues before deploying their applications. The planned system will check a given website URL and analyze Docker configuration files, presenting the results with explanations and possible solutions.
+
+## Target Users
+
+- Software engineering students
+- Individual developers
+- Small development teams
+
+## Planned Technologies
+
+- **Frontend:** React and TypeScript
+- **Backend:** Java and Spring Boot
+- **Deployment:** AWS
+- **Version Control:** Git and GitHub
+
+## Current Status
+
+Week 1 – Project definition and research.
