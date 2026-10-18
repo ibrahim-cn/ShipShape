@@ -72,12 +72,12 @@ For safety, uploaded Dockerfiles will be analyzed as text and will never be exec
 | Week 1 | Project definition and initial research |
 | Week 2 | Requirements analysis and GitHub issue planning |
 | Week 3 | System architecture, API design, and project structure |
-| Week 4 | Website accessibility, HTTP status, and HTTPS checks |
-| Week 5 | Response-time measurement and security header analysis |
-| Week 6 | Rule-based Dockerfile analysis |
-| Week 7 | Frontend development and backend integration |
-| Week 8 | Testing, error handling, and AWS deployment preparation |
-| Week 9 | AWS deployment and final documentation |
+| Week 4 | First working prototype with website reachability and HTTP status checks |
+| Week 5 | HTTPS verification, response-time measurement, and security header analysis |
+| Week 6 | Rule-based Dockerfile analysis, testing, and validation evidence |
+| Week 7 | Frontend/backend integration and reproducibility |
+| Week 8 | Report completion, README refinement, and AWS deployment preparation |
+| Week 9 | AWS deployment, final demonstration, and presentation |
 
 The plan may be adjusted as development progresses.
 
