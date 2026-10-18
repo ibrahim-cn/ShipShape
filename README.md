@@ -1,4 +1,4 @@
-# ShipShape
+# ShipShape: Pre-Deployment Readiness Checker
 
 ## Project Description
 
@@ -62,12 +62,13 @@ The objective of ShipShape is to develop a web-based tool that helps developers 
 - Kubernetes configuration analysis
 - Automatic correction of detected issues
 - Execution of uploaded Dockerfiles
+- Guaranteeing the complete security of an application
 
-For safety, uploaded Dockerfiles will be analyzed as text and will never be executed. Website URL checks will validate user input and block requests to internal or private network addresses.
+For safety, uploaded Dockerfiles will be analyzed as text and will never be executed. Website URL checks will validate user input and block requests to private or internal network addresses, including domains that resolve to these addresses and redirects to internal addresses.
 
 ## Development Plan
 
-| Week | Planned Work |
+| **Week** | **Planned Work** |
 |---|---|
 | Week 1 | Project definition and initial research |
 | Week 2 | Requirements analysis and GitHub issue planning |
@@ -85,8 +86,21 @@ The plan may be adjusted as development progresses.
 
 **Week 2 – Requirements Analysis**
 
-The project description, target users, initial scope, functional requirements, and non-functional requirements have been defined. User stories, acceptance criteria, and the initial development plan have also been prepared. GitHub Issues have been created to track the main development tasks.
+The project requirements, target users, scope, and planned features have been defined. Functional and non-functional requirements, user stories, and acceptance criteria have also been prepared. GitHub Issues have been created to organize the main development tasks.
 
-The next step is to design the system architecture, define the backend API endpoints, and prepare the React and Spring Boot project structure. AWS deployment options will also be reviewed.
+The next step is to design the system architecture, define the backend API endpoints, and set up the React and Spring Boot project structure. AWS deployment options will be evaluated during development.
 
-**Note:** The planned features have not yet been implemented.
+**Note:** The project is currently in the planning phase. The planned features have not yet been implemented.
+
+## GitHub Issues
+
+The main development tasks are tracked through GitHub Issues:
+
+- [Implement Website Accessibility and HTTPS Checks](https://github.com/ibrahim-cn/ShipShape/issues/1)
+- [Add Response Time and Security Header Analysis](https://github.com/ibrahim-cn/ShipShape/issues/2)
+- [Implement Rule-Based Dockerfile Analysis](https://github.com/ibrahim-cn/ShipShape/issues/3)
+
+## References
+
+- [Docker Documentation – Building Best Practices](https://docs.docker.com/build/building/best-practices/)
+- [OWASP Secure Headers Project](https://owasp.org/projects/secure-headers-project)
