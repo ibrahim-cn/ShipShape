@@ -1,0 +1,23 @@
+
+flowchart TD
+    U["User"] --> UI["Frontend: React + TypeScript"]
+    UI --> API["Backend REST API: Java + Spring Boot"]
+
+    API --> SAFE["URL Safety Validator"]
+    SAFE --> CHECK["Website Readiness Checker"]
+    CHECK --> WEB["Target Website"]
+
+    API --> DOCKER["Dockerfile Rule Analyzer"]
+    DOCKER --> RULES["Static Rule Checks"]
+
+    CHECK --> RESULT["Result Formatter"]
+    RULES --> RESULT
+
+    RESULT --> UI
+    UI --> OUT["Pass / Warning / Fail<br/>Explanations and Suggestions"]
+
+    SAFE -.-> SECURITY["Security Boundary"]
+    DOCKER -.-> SECURITY
+
+    SAFE --- NOTE1["Blocks private and internal addresses"]
+    DOCKER --- NOTE2["Text analysis only; Dockerfile is never executed"]
