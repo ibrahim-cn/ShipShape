@@ -1,0 +1,10 @@
+# macOS
+.DS_Store
+
+# Java / Maven
+**/target/
+
+# IDEs
+.idea/
+.vscode/
+*.iml
