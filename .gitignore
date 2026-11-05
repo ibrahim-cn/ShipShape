@@ -4,6 +4,9 @@
 # Java / Maven
 **/target/
 
+# Generated evidence build output
+/evidence/week-04/frontend-dist/
+
 # IDEs
 .idea/
 .vscode/

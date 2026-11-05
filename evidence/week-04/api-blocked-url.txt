@@ -1,0 +1,7 @@
+Request URL: http://localhost:8080/api/checks/website
+Request body: {"url":"http://127.0.0.1/"}
+
+Response body:
+{"error":"Host not allowed"}
+HTTP status code: 400
+curl exit code: 0

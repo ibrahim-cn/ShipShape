@@ -1,0 +1,14 @@
+
+> shipshape-frontend@0.0.0 build
+> tsc --noEmit && vite build --outDir ../evidence/week-04/frontend-dist --emptyOutDir
+
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 19 modules transformed.
+rendering chunks...
+computing gzip size...
+../evidence/week-04/frontend-dist/index.html                   0.58 kB │ gzip:  0.36 kB
+../evidence/week-04/frontend-dist/assets/index-DhlECqfs.css    4.29 kB │ gzip:  1.49 kB
+../evidence/week-04/frontend-dist/assets/index-4psNs5Wu.js   223.58 kB │ gzip: 69.99 kB
+
+✓ built in 150ms
