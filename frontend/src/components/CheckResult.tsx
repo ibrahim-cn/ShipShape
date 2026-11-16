@@ -1,36 +1,9 @@
 import type { WebsiteCheckResponse } from '../types/websiteCheck'
+import type { ReadinessStatus, StatusTone } from '../utils/status'
+import { getStatusTone, normalizeStatus } from '../utils/status'
 
 interface CheckResultProps {
   result: WebsiteCheckResponse
-}
-
-type ReadinessStatus = 'PASS' | 'WARNING' | 'FAIL' | 'UNKNOWN'
-type StatusTone = 'success' | 'warning' | 'failure' | 'neutral'
-
-function normalizeStatus(status: string | null | undefined): ReadinessStatus {
-  const normalized = status?.trim().toUpperCase()
-
-  if (normalized === 'PASS' || normalized === 'WARNING' || normalized === 'FAIL') {
-    return normalized
-  }
-
-  return 'UNKNOWN'
-}
-
-function getStatusTone(status: ReadinessStatus): StatusTone {
-  if (status === 'PASS') {
-    return 'success'
-  }
-
-  if (status === 'WARNING') {
-    return 'warning'
-  }
-
-  if (status === 'FAIL') {
-    return 'failure'
-  }
-
-  return 'neutral'
 }
 
 function formatResponseTime(responseTimeMs: number | null | undefined): string {

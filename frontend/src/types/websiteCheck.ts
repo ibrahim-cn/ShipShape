@@ -1,12 +1,7 @@
+import type { Finding } from './finding'
+
 export interface WebsiteCheckRequest {
   url: string
-}
-
-export interface Finding {
-  name: string
-  status: string
-  explanation: string
-  suggestedAction: string
 }
 
 export interface HeaderCheckResult {

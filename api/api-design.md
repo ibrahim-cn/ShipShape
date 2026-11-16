@@ -4,9 +4,9 @@
 
 ShipShape uses a REST API to connect the React and TypeScript frontend with the Java Spring Boot backend.
 
-The current backend implements a health endpoint and a website readiness check. The website readiness check validates a submitted URL, checks whether the website is reachable, and returns the HTTP status code and other readiness information. Static Dockerfile analysis remains planned and is not implemented yet.
+The current backend implements a health endpoint, a website readiness check, and rule-based static Dockerfile analysis. The website readiness check validates a submitted URL, checks whether the website is reachable, and returns the HTTP status code and other readiness information. Dockerfile analysis parses submitted content as text and applies predefined rules without executing the Dockerfile.
 
-The implemented website-check API returns structured results with `PASS`, `WARNING`, or `FAIL` statuses, explanations, and suggested actions where applicable.
+Both implemented check APIs return structured results with `PASS`, `WARNING`, or `FAIL` statuses, explanations, and suggested actions where applicable.
 
 ### Endpoint Summary
 
@@ -14,9 +14,9 @@ The implemented website-check API returns structured results with `PASS`, `WARNI
 |---|---|---|
 | `GET` | `/api/health` | Implemented |
 | `POST` | `/api/checks/website` | Implemented |
-| `POST` | `/api/v1/dockerfile-analysis` | Planned, not implemented |
+| `POST` | `/api/checks/dockerfile` | Implemented |
 
-The implemented website-check endpoint does not use a version prefix. Its path is `POST /api/checks/website`.
+The implemented check endpoints do not use a version prefix. Their paths are `POST /api/checks/website` and `POST /api/checks/dockerfile`.
 
 ## 2. API Endpoints
 
@@ -189,45 +189,105 @@ The following example is illustrative. Actual values depend on the submitted URL
 - `200 OK`: The check completed and a website-check response was returned. This includes target responses with `4xx` or `5xx` status codes; in those cases, `reachable` is `false` and `httpStatusCode` contains the target status.
 - `400 Bad Request`: The URL is missing, malformed, has an invalid host, uses an unsupported scheme, contains credentials, is blocked, times out, or cannot be requested successfully.
 
-### 2.3 Dockerfile Analysis (Planned)
+### 2.3 Dockerfile Analysis (Implemented)
 
-**Status:** Planned, not implemented.
+**Endpoint:** `POST /api/checks/dockerfile`
 
-**Endpoint:** `POST /api/v1/dockerfile-analysis`
+**Content Type:** `application/json`
 
-**Purpose:** Analyzes an uploaded Dockerfile using predefined static rules.
+**Purpose:** Analyzes submitted Dockerfile content using predefined static rules.
 
-**Request:** Multipart form data containing a Dockerfile text file.
+**Request Body:**
+
+```json
+{
+  "content": "FROM node:latest\nUSER root\nCOPY . .\n"
+}
+```
+
+**Request Fields:**
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `content` | string | Yes | Dockerfile text to analyze. The maximum accepted length is 100,000 characters. |
 
 **Processing:**
 
-- Validate the uploaded file.
-- Read the Dockerfile as text.
-- Apply predefined static analysis rules.
-- Return findings with statuses and improvement suggestions.
+- Reject content that is null, blank, or larger than 100,000 characters.
+- Parse the content as text without executing any instruction.
+- Ignore blank lines and full-line comments.
+- Handle leading whitespace, case-insensitive instruction names, CRLF line endings, and backslash line continuations.
+- Support multi-stage Dockerfiles by selecting the last `FROM` instruction as the start of the final stage.
+- Apply the five rules below.
+- Return one finding per rule and an overall status.
 
-**Security Requirement:** The Dockerfile must never be executed.
+**Static Analysis Rules:**
+
+1. **FROM instruction:** A `FROM` instruction must be present and name a base image. Missing or invalid `FROM` instructions produce `FAIL`.
+2. **Base image tag:** An explicit `:latest` tag produces `WARNING`. A missing tag is not automatically treated as `:latest`.
+3. **Final-stage user:** A missing `USER`, `USER root`, or `USER 0` in the final stage produces `WARNING`. A `USER` in an earlier build stage does not satisfy this rule.
+4. **Final-stage health check:** A missing `HEALTHCHECK` or `HEALTHCHECK NONE` in the final stage produces `WARNING`.
+5. **COPY and ADD usage:** `COPY` passes this rule. Any `ADD` produces `WARNING`, but not `FAIL`, because `ADD` can fetch remote URLs and extract archives automatically. A Dockerfile with no `COPY` or `ADD` instructions passes this rule.
+
+**Response Fields:**
+
+| Field | Type | Description |
+|---|---|---|
+| `overallStatus` | string | The combined result: `PASS`, `WARNING`, or `FAIL`. |
+| `findings` | array | Five findings using the same `name`, `status`, `explanation`, and `suggestedAction` fields defined for website checks. |
+
+The finding names are returned in this order: `FROM Instruction`, `Base Image Tag`, `Final Stage User`, `Health Check`, and `COPY and ADD Usage`.
 
 **Example Response:**
 
 ```json
 {
-  "results": [
+  "overallStatus": "WARNING",
+  "findings": [
     {
-      "check": "Base Image",
-      "status": "Warning",
-      "message": "Review the selected base image.",
-      "suggestion": "Consider using a trusted and specific base image."
+      "name": "FROM Instruction",
+      "status": "PASS",
+      "explanation": "The Dockerfile contains a valid FROM instruction.",
+      "suggestedAction": "No action required."
+    },
+    {
+      "name": "Base Image Tag",
+      "status": "WARNING",
+      "explanation": "At least one FROM instruction explicitly uses the :latest tag.",
+      "suggestedAction": "Pin a specific base image version instead of using :latest for reproducible builds."
+    },
+    {
+      "name": "Final Stage User",
+      "status": "WARNING",
+      "explanation": "The final stage explicitly runs as root through USER root or USER 0.",
+      "suggestedAction": "Create and use a non-root user in the final stage."
+    },
+    {
+      "name": "Health Check",
+      "status": "WARNING",
+      "explanation": "No HEALTHCHECK instruction was found in the final stage.",
+      "suggestedAction": "Add a HEALTHCHECK CMD instruction so container health can be monitored."
+    },
+    {
+      "name": "COPY and ADD Usage",
+      "status": "PASS",
+      "explanation": "The Dockerfile uses COPY for file and directory transfers.",
+      "suggestedAction": "No action required."
     }
   ]
 }
 ```
 
-This response is illustrative and describes planned behavior. The endpoint is not implemented yet, and the response shape may change when the feature is designed and implemented.
+**Status Codes:**
+
+- `200 OK`: The Dockerfile text was parsed and analyzed.
+- `400 Bad Request`: The content is missing, blank, or larger than 100,000 characters.
+
+**Security Requirement:** Dockerfile content is analyzed as text. It is never executed, and the backend does not invoke Docker, containers, shell commands, external services, or AI services for this analysis.
 
 ## 3. Result Statuses
 
-The implemented website-check API uses the following uppercase status values:
+Both implemented check APIs use the following uppercase status values:
 
 - **PASS:** The check passed.
 - **WARNING:** A potential issue or improvement opportunity was identified.
@@ -268,6 +328,8 @@ Current error messages include:
 | Redirect loop | `Redirect loop detected` |
 | More than five redirects | `Too many redirects` |
 | Invalid redirect location | `Invalid redirect location` |
+| Missing or blank Dockerfile content | `Dockerfile content is required` |
+| Dockerfile content over 100,000 characters | `Dockerfile content is too large` |
 
 Example request for a blocked destination:
 
@@ -285,7 +347,7 @@ Example response:
 }
 ```
 
-The error handler avoids exposing internal implementation details. Expected errors do not crash the backend. Error handling for uploaded Dockerfiles will be defined when Dockerfile analysis is implemented.
+The error handler avoids exposing internal implementation details. Expected errors do not crash the backend. Dockerfile validation errors use the same JSON error shape.
 
 ## 5. Security Considerations
 
@@ -293,15 +355,17 @@ The error handler avoids exposing internal implementation details. Expected erro
 - Revalidate redirect destinations.
 - Block localhost, private IP addresses, and internal network destinations.
 - Apply connection and request timeouts.
-- Never execute uploaded Dockerfiles.
+- Analyze Dockerfile content as text and never execute it.
+- Limit Dockerfile content to 100,000 characters.
+- Do not invoke Docker, containers, shell commands, external services, or AI services for Dockerfile analysis.
 - Avoid exposing internal implementation details in error messages.
 - DNS validation does not guarantee that the destination IP remains pinned at connection time. Complete protection against DNS rebinding is therefore not claimed.
 
 ## 6. Scope and Limitations
 
-The implemented API supports the health check and the website readiness check defined in the project requirements. Dockerfile analysis is planned but not implemented. The API does not provide penetration testing, continuous monitoring, Kubernetes analysis, automatic remediation, or a guarantee of complete security.
+The implemented API supports the health check, the website readiness check, and rule-based Dockerfile static analysis. Dockerfile analysis does not build an image, run a container, execute instructions, or perform a complete security audit. The API does not provide penetration testing, continuous monitoring, Kubernetes analysis, automatic remediation, or a guarantee of complete security.
 
-The current frontend displays only a subset of the website-check response. The backend returns response time, HTTPS usage, security headers, overall status, and findings, but the current Week 4 interface displays only the submitted URL, reachability, and HTTP status code.
+The frontend displays the complete website-check response and provides a separate Dockerfile analysis view for the five implemented rules.
 
 ## 7. Implementation Status
 
@@ -309,20 +373,22 @@ The current frontend displays only a subset of the website-check response. The b
 
 - `GET /api/health`
 - `POST /api/checks/website`
+- `POST /api/checks/dockerfile`
 - URL validation and SSRF protection
 - Redirect target revalidation
 - Reachability and HTTP status reporting
 - Response-time measurement
 - HTTPS detection
 - Security-header inspection
+- Static Dockerfile parsing with multi-stage support
+- Dockerfile rules for `FROM`, explicit `:latest` tags, final-stage `USER`, final-stage `HEALTHCHECK`, and `COPY`/`ADD` usage
 - `PASS`, `WARNING`, and `FAIL` findings with an overall status
 
-The website-check endpoint is implemented in the backend and covered by the existing automated backend tests.
+The website-check and Dockerfile-analysis endpoints are implemented in the backend and covered by automated backend tests.
 
 **Planned, not implemented:**
 
-- Dockerfile static analysis
-- A versioned `/api/v1` website-check endpoint; the implemented endpoint is `/api/checks/website`
-- Any Dockerfile-analysis response model or validation rules
+- A versioned `/api/v1` endpoint; the implemented endpoints are `/api/checks/website` and `/api/checks/dockerfile`
+- Broader frontend and end-to-end automated testing
 
 AWS deployment and other future work are outside the scope of this API document and remain planned.

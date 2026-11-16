@@ -16,25 +16,19 @@ The objective of ShipShape is to develop a web-based tool that helps developers 
 
 ## Current Status
 
-**Week 4 – First Working Prototype**
+**Week 5 – Website Readiness Details and Dockerfile Static Analysis**
 
-ShipShape now has a working local prototype with a React and TypeScript frontend connected to a Java 17 and Spring Boot backend.
+ShipShape now has a working local prototype with a React and TypeScript frontend connected to a Java 17 and Spring Boot backend. The interface provides two checks:
 
-The current user-facing workflow implements FR-01:
+- **Website Check:** submit a public URL, then review reachability, HTTP status, response time, HTTPS usage, security headers, the overall readiness status, and individual findings.
+- **Dockerfile Analysis:** paste Dockerfile content, then review rule-based `PASS`, `WARNING`, and `FAIL` findings for base images, user configuration, health checks, and file-transfer instructions.
 
-- A user can submit a public website URL through the frontend.
-- The frontend sends the URL to the backend through the Vite development proxy.
-- The backend checks whether the website is reachable.
-- The frontend displays the submitted URL, the reachability result, and the HTTP status code returned by the server.
+The Dockerfile endpoint is `POST /api/checks/dockerfile`. Dockerfile content is analyzed as text and is never executed. Website checks continue to use `POST /api/checks/website`.
 
-The backend also calculates response time, HTTPS usage, selected security headers, and Pass/Warning/Fail findings. These additional results are returned by the API but are not displayed in the current Week 4 interface.
+Verification for the current implementation recorded:
 
-Earlier Week 4 verification recorded the following results:
-
-- The backend test suite completed with **21 passing tests** (0 failures, 0 errors, 0 skipped) under Java 17.
+- The backend test suite completed with **49 passing tests** (0 failures, 0 errors, 0 skipped) under Java 17.
 - The frontend production build completed successfully with `npm run build`.
-
-These results were recorded during earlier verification and are not presented as a new test run for this README update.
 
 The application currently runs locally only. It has not been deployed publicly.
 
@@ -61,7 +55,7 @@ The project design documents are available in the repository:
 - [API design](api/api-design.md)
 - [AWS service selection](architecture/aws-service-selection.md)
 
-The implemented website-check endpoint is `POST /api/checks/website`, as documented in the API section below.
+The implemented check endpoints are `POST /api/checks/website` and `POST /api/checks/dockerfile`, as documented in the API section below.
 
 ## Project Structure
 
@@ -76,15 +70,33 @@ ShipShape/
 
 ## Implemented Functionality
 
-### FR-01: Website URL Submission, Reachability, and HTTP Status
+### FR-01: Website URL Submission, Reachability, and Readiness
 
 - `frontend/src/components/UrlCheckForm.tsx` provides the URL input and submit action.
-- `frontend/src/App.tsx` manages loading, error, and result state.
+- `frontend/src/App.tsx` manages the selected check, loading, error, and result state.
 - `frontend/src/api/websiteCheck.ts` sends the request to `POST /api/checks/website`.
-- `frontend/src/components/CheckResult.tsx` displays the submitted URL, reachability, and HTTP status code.
+- `frontend/src/components/CheckResult.tsx` displays the submitted URL, reachability, HTTP status, response time, HTTPS usage, security headers, overall status, and findings.
 - `backend/src/main/java/com/shipshape/backend/controller/WebsiteCheckController.java` exposes the endpoint.
-- `backend/src/main/java/com/shipshape/backend/service/WebsiteCheckService.java` performs the HTTP request and determines reachability and status.
+- `backend/src/main/java/com/shipshape/backend/service/WebsiteCheckService.java` performs the HTTP request and determines reachability, status, and readiness findings.
 - `backend/src/main/java/com/shipshape/backend/util/UrlValidator.java` validates the submitted URL before any request is made.
+
+### Dockerfile Static Analysis
+
+- `frontend/src/components/DockerfileCheckForm.tsx` provides the Dockerfile textarea and analyze action.
+- `frontend/src/components/DockerfileResult.tsx` displays the overall status and individual findings.
+- `frontend/src/api/dockerfileAnalysis.ts` sends the request to `POST /api/checks/dockerfile`.
+- `backend/src/main/java/com/shipshape/backend/controller/DockerfileAnalysisController.java` exposes the endpoint.
+- `backend/src/main/java/com/shipshape/backend/service/DockerfileAnalysisService.java` parses the Dockerfile as text and applies the rules.
+
+The analyzer checks:
+
+1. A valid `FROM` instruction is present. Multi-stage builds are supported.
+2. Explicit `:latest` base image tags are reported as warnings. A missing tag is not automatically treated as `:latest`.
+3. The final stage should set a non-root `USER`. Missing users and `USER root` or `USER 0` are warnings. A `USER` in an earlier build stage does not satisfy the final stage.
+4. The final stage should define a `HEALTHCHECK`. Missing health checks and `HEALTHCHECK NONE` are warnings.
+5. `ADD` usage is reported as a warning because it can fetch remote URLs and extract archives automatically. `COPY` is recommended where those extra behaviors are not required; `ADD` is not automatically a failure.
+
+Comments, blank lines, leading whitespace, case-insensitive instruction names, CRLF line endings, and backslash line continuations are handled. The maximum accepted content length is 100,000 characters.
 
 ### Health Check
 
@@ -94,23 +106,9 @@ ShipShape/
 
 Website URL checks validate user input and block requests to localhost, private and internal IP addresses, and domains that resolve to those addresses. Redirect targets are revalidated before they are followed. The implementation does not claim complete protection against DNS rebinding because DNS validation alone does not pin the destination IP at connection time.
 
-### Additional Backend Results
-
-The website-check response also includes:
-
-- Response time in milliseconds
-- HTTPS usage
-- Results for selected security headers
-- Overall Pass/Warning/Fail status
-- Individual findings with explanations and suggested actions
-
-These values are available from the backend but are not currently displayed in the Week 4 interface.
-
 ## Planned Functionality
 
-- Display the already-calculated response time, HTTPS result, and security-header findings in the frontend.
-- Add rule-based Dockerfile static analysis. Uploaded Dockerfiles will be analyzed as text and will never be executed.
-- Complete testing and validation evidence for later milestones.
+- Complete broader frontend and end-to-end validation evidence.
 - Prepare and complete AWS deployment.
 - Refine the README and final project documentation.
 
@@ -136,7 +134,7 @@ These values are available from the backend but are not currently displayed in t
 - Execution of uploaded Dockerfiles
 - Guaranteeing the complete security of an application
 
-For safety, uploaded Dockerfiles will be analyzed as text and will never be executed. Website URL checks validate user input and block requests to private or internal network addresses, including domains that resolve to these addresses and redirects to internal addresses.
+For safety, Dockerfile content is analyzed as text and is never executed. Website URL checks validate user input and block requests to private or internal network addresses, including domains that resolve to these addresses and redirects to internal addresses.
 
 ## Local Development
 
@@ -190,7 +188,7 @@ npm run dev
 
 The frontend starts at `http://localhost:5173`.
 
-The backend must be running before a website check can succeed.
+The backend must be running before either check can succeed.
 
 ### Vite Development Proxy
 
@@ -208,7 +206,7 @@ server: {
 }
 ```
 
-As a result, the frontend calls `/api/checks/website` on port 5173, and Vite forwards the request to the backend on port 8080. No backend CORS configuration is required for local development.
+As a result, the frontend calls `/api/checks/website` and `/api/checks/dockerfile` on port 5173, and Vite forwards the requests to the backend on port 8080. No backend CORS configuration is required for local development.
 
 ## API Endpoints
 
@@ -257,9 +255,41 @@ If the submitted URL is blocked, the backend returns HTTP 400 with a JSON error:
 }
 ```
 
-## Week 4 Verification Scenarios
+### `POST /api/checks/dockerfile`
 
-With both applications running, open `http://localhost:5173` and use the URL form.
+Accepts Dockerfile content as text and returns rule-based static analysis findings.
+
+Request:
+
+```bash
+curl -X POST http://localhost:8080/api/checks/dockerfile \
+  -H "Content-Type: application/json" \
+  -d '{"content":"FROM node:latest\nUSER root\nCOPY . .\n"}'
+```
+
+Response fields:
+
+```json
+{
+  "overallStatus": "WARNING",
+  "findings": [
+    {
+      "name": "Base Image Tag",
+      "status": "WARNING",
+      "explanation": "At least one FROM instruction explicitly uses the :latest tag.",
+      "suggestedAction": "Pin a specific base image version instead of using :latest for reproducible builds."
+    }
+  ]
+}
+```
+
+The complete response contains five findings in this order: `FROM Instruction`, `Base Image Tag`, `Final Stage User`, `Health Check`, and `COPY and ADD Usage`.
+
+Dockerfile content is never executed. The request is rejected with HTTP 400 when the content is missing, blank, or larger than 100,000 characters.
+
+## Verification Scenarios
+
+With both applications running, open `http://localhost:5173` and select either check.
 
 ### Scenario 1: Public Website
 
@@ -274,6 +304,7 @@ Expected result:
 - The submitted URL is displayed.
 - The reachability result is shown as reachable.
 - The HTTP status code is displayed as `200`.
+- Response time, HTTPS status, security headers, overall status, and findings are displayed.
 
 ### Scenario 2: Blocked Private Address
 
@@ -289,6 +320,41 @@ Expected result:
 - The frontend displays the error message `Host not allowed`.
 - No request is sent to the private address.
 
+### Scenario 3: Valid Dockerfile
+
+Open the Dockerfile Analysis tab and submit:
+
+```dockerfile
+FROM node:20-alpine
+WORKDIR /app
+COPY . .
+USER node
+HEALTHCHECK CMD node -e "process.exit(0)"
+CMD ["node", "server.js"]
+```
+
+Expected result:
+
+- The overall status is `PASS`.
+- The response contains five findings with `PASS` status.
+
+### Scenario 4: Dockerfile with Warnings
+
+Submit:
+
+```dockerfile
+FROM node:latest
+USER root
+COPY . .
+```
+
+Expected result:
+
+- The overall status is `WARNING`.
+- The explicit `:latest` tag and root user are reported as warnings.
+- The missing health check is reported as a warning.
+- The Dockerfile is analyzed as text and is not executed.
+
 ## Testing and Build Commands
 
 ### Backend Tests
@@ -300,10 +366,10 @@ cd backend
 JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home mvn test
 ```
 
-Earlier Week 4 verification recorded:
+The current verification run recorded:
 
 ```text
-Tests run: 21, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 49, Failures: 0, Errors: 0, Skipped: 0
 BUILD SUCCESS
 ```
 
@@ -316,13 +382,12 @@ cd frontend
 npm run build
 ```
 
-This runs the TypeScript check and the Vite production build. Earlier Week 4 verification recorded a successful build.
+This runs the TypeScript check and the Vite production build. The current implementation builds successfully.
 
 ## Limitations
 
-- The current Week 4 user interface displays only the submitted URL, reachability, and HTTP status code.
-- Response time, HTTPS usage, security headers, overall status, and findings are calculated by the backend but are not displayed in the current interface.
-- Dockerfile static analysis is not implemented yet.
+- Dockerfile analysis is static and rule-based. It does not build an image, run a container, execute Dockerfile instructions, or provide a complete security audit.
+- The analyzer covers the five documented rules and does not evaluate every Dockerfile best practice.
 - AWS deployment is not completed, and the application is not publicly deployed.
 - The frontend currently relies on the Vite development proxy and requires the backend to be running locally.
 - Frontend automated tests are not implemented yet.
@@ -336,13 +401,13 @@ This runs the TypeScript check and the Vite production build. Earlier Week 4 ver
 | Week 2 | Requirements analysis and GitHub issue planning |
 | Week 3 | System architecture, API design, and project structure |
 | Week 4 | First working prototype with website reachability and HTTP status checks |
-| Week 5 | HTTPS verification, response-time measurement, and security header analysis |
-| Week 6 | Rule-based Dockerfile analysis, testing, and validation evidence |
-| Week 7 | Frontend/backend integration and reproducibility |
+| Week 5 | Website readiness details and rule-based Dockerfile static analysis |
+| Week 6 | Testing, validation evidence, and integration refinements |
+| Week 7 | Reproducibility and deployment preparation |
 | Week 8 | Report completion, README refinement, and AWS deployment preparation |
 | Week 9 | AWS deployment, final demonstration, and presentation |
 
-The plan may be adjusted as development progresses. Week 4 is the current stage; later milestones remain planned work.
+The plan may be adjusted as development progresses. Week 5 is the current stage; later milestones remain planned work.
 
 ## GitHub Issues
 

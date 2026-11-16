@@ -44,7 +44,8 @@ body {
 }
 
 button,
-input {
+input,
+textarea {
   font: inherit;
 }
 
@@ -117,6 +118,39 @@ input {
   color: var(--muted);
 }
 
+.check-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.check-tab {
+  appearance: none;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  padding: 10px 14px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.check-tab:hover {
+  color: var(--text);
+}
+
+.check-tab[aria-selected='true'] {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.check-tab:focus-visible {
+  outline: 3px solid rgba(15, 98, 254, 0.35);
+  outline-offset: -3px;
+}
+
 .check-form {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -130,6 +164,18 @@ input {
   margin-bottom: 8px;
   font-size: 0.85rem;
   font-weight: 600;
+}
+
+.form-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.form-heading label {
+  margin-bottom: 0;
 }
 
 .input-row {
@@ -148,17 +194,20 @@ input {
   outline: none;
 }
 
-.input-row input:focus {
+.input-row input:focus,
+.dockerfile-input:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(15, 98, 254, 0.15);
 }
 
-.input-row input:disabled {
+.input-row input:disabled,
+.dockerfile-input:disabled {
   background: #f2f4f7;
   cursor: not-allowed;
 }
 
-.input-row button {
+.input-row button,
+.form-actions button {
   border: 0;
   border-radius: 8px;
   padding: 11px 18px;
@@ -169,18 +218,57 @@ input {
   cursor: pointer;
 }
 
-.input-row button:hover:not(:disabled) {
+.input-row button:hover:not(:disabled),
+.form-actions button:hover:not(:disabled) {
   background: var(--accent-hover);
 }
 
-.input-row button:focus-visible {
+.input-row button:focus-visible,
+.form-actions button:focus-visible {
   outline: 3px solid rgba(15, 98, 254, 0.35);
   outline-offset: 2px;
 }
 
-.input-row button:disabled {
+.input-row button:disabled,
+.form-actions button:disabled {
   opacity: 0.65;
   cursor: not-allowed;
+}
+
+.dockerfile-input {
+  width: 100%;
+  min-height: 300px;
+  resize: vertical;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--text);
+  outline: none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  tab-size: 2;
+}
+
+.field-hint {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.field-hint-over {
+  color: var(--failure);
+  font-weight: 600;
+}
+
+.dockerfile-safety-note {
+  margin: 8px 0 0;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
 }
 
 .field-error {
@@ -435,6 +523,12 @@ input {
   font-size: 0.9rem;
 }
 
+.result-note {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
 .app-footer {
   background: var(--surface);
   border-top: 1px solid var(--border);
@@ -462,8 +556,25 @@ input {
     flex-direction: column;
   }
 
-  .input-row button {
+  .input-row button,
+  .form-actions button {
     width: 100%;
+  }
+
+  .check-tabs {
+    gap: 0;
+  }
+
+  .check-tab {
+    flex: 1;
+    padding: 10px 8px;
+    font-size: 0.82rem;
+  }
+
+  .form-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
   }
 
   .result-grid {
