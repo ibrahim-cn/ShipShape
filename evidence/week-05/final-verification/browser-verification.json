@@ -1,0 +1,472 @@
+{
+  "date": "2026-11-16",
+  "appUrl": "http://127.0.0.1:5173/",
+  "viewports": {
+    "desktop": "1280x900",
+    "mobile": "390x844"
+  },
+  "overall": "PASS",
+  "results": [
+    {
+      "name": "initial desktop layout",
+      "passed": true,
+      "detail": {
+        "tabs": 2,
+        "selectedTab": "Website Check",
+        "websiteFormVisible": true,
+        "dockerfilePanelVisible": false,
+        "horizontalOverflow": false
+      }
+    },
+    {
+      "name": "website loading state",
+      "passed": true,
+      "detail": {
+        "buttonText": "Checking..."
+      }
+    },
+    {
+      "name": "website desktop success",
+      "passed": true,
+      "detail": {
+        "selectedTab": "Website Check",
+        "resultTitle": "Website readiness check needs attention",
+        "overallBadge": "WARNING",
+        "fields": {
+          "Submitted URL": "https://example.com",
+          "Reachability": "Reachable",
+          "HTTP status code": "200",
+          "HTTPS": "Enabled",
+          "Response time": "53 ms",
+          "Overall readiness": "WARNING"
+        },
+        "securityHeaderRows": 3,
+        "findings": 6,
+        "findingStatuses": [
+          "PASS",
+          "PASS",
+          "PASS",
+          "WARNING",
+          "WARNING",
+          "WARNING"
+        ],
+        "horizontalOverflow": false,
+        "bodyWidth": 1265,
+        "viewportWidth": 1280
+      }
+    },
+    {
+      "name": "website desktop no horizontal overflow",
+      "passed": true,
+      "detail": {
+        "bodyWidth": 1265,
+        "viewportWidth": 1280
+      }
+    },
+    {
+      "name": "website blocked URL error",
+      "passed": true,
+      "detail": {
+        "errorTitle": "Check failed",
+        "errorText": "Host not allowed",
+        "resultVisible": false,
+        "horizontalOverflow": false,
+        "bodyWidth": 1280,
+        "viewportWidth": 1280
+      }
+    },
+    {
+      "name": "website error desktop no horizontal overflow",
+      "passed": true,
+      "detail": {
+        "bodyWidth": 1280,
+        "viewportWidth": 1280
+      }
+    },
+    {
+      "name": "dockerfile empty content validation",
+      "passed": true,
+      "detail": {
+        "errorText": "Paste Dockerfile content to analyze.",
+        "invalid": "true",
+        "horizontalOverflow": false,
+        "bodyWidth": 1265,
+        "viewportWidth": 1280
+      }
+    },
+    {
+      "name": "dockerfile empty validation desktop no horizontal overflow",
+      "passed": true,
+      "detail": {
+        "bodyWidth": 1265,
+        "viewportWidth": 1280
+      }
+    },
+    {
+      "name": "dockerfile oversized validation",
+      "passed": true,
+      "detail": {
+        "errorText": "Dockerfile content must be 100,000 characters or fewer.",
+        "invalid": "true",
+        "characterCount": "100.001 / 100.000 characters",
+        "horizontalOverflow": false,
+        "bodyWidth": 1265,
+        "viewportWidth": 1280
+      }
+    },
+    {
+      "name": "dockerfile oversized validation desktop no horizontal overflow",
+      "passed": true,
+      "detail": {
+        "bodyWidth": 1265,
+        "viewportWidth": 1280
+      }
+    },
+    {
+      "name": "dockerfile loading state",
+      "passed": true,
+      "detail": {
+        "buttonText": "Analyzing..."
+      }
+    },
+    {
+      "name": "dockerfile PASS display",
+      "passed": true,
+      "detail": {
+        "selectedTab": "Dockerfile Analysis",
+        "resultTitle": "Dockerfile analysis passed",
+        "overallBadge": "PASS",
+        "findings": 5,
+        "findingNames": [
+          "FROM Instruction",
+          "Base Image Tag",
+          "Final Stage User",
+          "Health Check",
+          "COPY and ADD Usage"
+        ],
+        "findingStatuses": [
+          "PASS",
+          "PASS",
+          "PASS",
+          "PASS",
+          "PASS"
+        ],
+        "safetyNote": "Static text analysis only; the Dockerfile was not executed.",
+        "horizontalOverflow": false,
+        "bodyWidth": 1265,
+        "viewportWidth": 1280
+      }
+    },
+    {
+      "name": "dockerfile PASS desktop no horizontal overflow",
+      "passed": true,
+      "detail": {
+        "bodyWidth": 1265,
+        "viewportWidth": 1280
+      }
+    },
+    {
+      "name": "dockerfile WARNING display",
+      "passed": true,
+      "detail": {
+        "selectedTab": "Dockerfile Analysis",
+        "resultTitle": "Dockerfile analysis found issues to review",
+        "overallBadge": "WARNING",
+        "findings": 5,
+        "findingNames": [
+          "FROM Instruction",
+          "Base Image Tag",
+          "Final Stage User",
+          "Health Check",
+          "COPY and ADD Usage"
+        ],
+        "findingStatuses": [
+          "PASS",
+          "WARNING",
+          "PASS",
+          "PASS",
+          "PASS"
+        ],
+        "safetyNote": "Static text analysis only; the Dockerfile was not executed.",
+        "horizontalOverflow": false,
+        "bodyWidth": 1265,
+        "viewportWidth": 1280
+      }
+    },
+    {
+      "name": "dockerfile WARNING desktop no horizontal overflow",
+      "passed": true,
+      "detail": {
+        "bodyWidth": 1265,
+        "viewportWidth": 1280
+      }
+    },
+    {
+      "name": "dockerfile FAIL display",
+      "passed": true,
+      "detail": {
+        "selectedTab": "Dockerfile Analysis",
+        "resultTitle": "Dockerfile analysis failed",
+        "overallBadge": "FAIL",
+        "findings": 5,
+        "findingNames": [
+          "FROM Instruction",
+          "Base Image Tag",
+          "Final Stage User",
+          "Health Check",
+          "COPY and ADD Usage"
+        ],
+        "findingStatuses": [
+          "FAIL",
+          "WARNING",
+          "WARNING",
+          "WARNING",
+          "PASS"
+        ],
+        "safetyNote": "Static text analysis only; the Dockerfile was not executed.",
+        "horizontalOverflow": false,
+        "bodyWidth": 1265,
+        "viewportWidth": 1280
+      }
+    },
+    {
+      "name": "dockerfile FAIL desktop no horizontal overflow",
+      "passed": true,
+      "detail": {
+        "bodyWidth": 1265,
+        "viewportWidth": 1280
+      }
+    },
+    {
+      "name": "dockerfile USER root warning",
+      "passed": true,
+      "detail": {
+        "selectedTab": "Dockerfile Analysis",
+        "resultTitle": "Dockerfile analysis found issues to review",
+        "overallBadge": "WARNING",
+        "findings": 5,
+        "findingNames": [
+          "FROM Instruction",
+          "Base Image Tag",
+          "Final Stage User",
+          "Health Check",
+          "COPY and ADD Usage"
+        ],
+        "findingStatuses": [
+          "PASS",
+          "PASS",
+          "WARNING",
+          "PASS",
+          "PASS"
+        ],
+        "safetyNote": "Static text analysis only; the Dockerfile was not executed.",
+        "horizontalOverflow": false,
+        "bodyWidth": 1265,
+        "viewportWidth": 1280
+      }
+    },
+    {
+      "name": "dockerfile USER root desktop no horizontal overflow",
+      "passed": true,
+      "detail": {
+        "bodyWidth": 1265,
+        "viewportWidth": 1280
+      }
+    },
+    {
+      "name": "dockerfile HEALTHCHECK NONE warning",
+      "passed": true,
+      "detail": {
+        "selectedTab": "Dockerfile Analysis",
+        "resultTitle": "Dockerfile analysis found issues to review",
+        "overallBadge": "WARNING",
+        "findings": 5,
+        "findingNames": [
+          "FROM Instruction",
+          "Base Image Tag",
+          "Final Stage User",
+          "Health Check",
+          "COPY and ADD Usage"
+        ],
+        "findingStatuses": [
+          "PASS",
+          "PASS",
+          "PASS",
+          "WARNING",
+          "PASS"
+        ],
+        "safetyNote": "Static text analysis only; the Dockerfile was not executed.",
+        "horizontalOverflow": false,
+        "bodyWidth": 1265,
+        "viewportWidth": 1280
+      }
+    },
+    {
+      "name": "dockerfile HEALTHCHECK NONE desktop no horizontal overflow",
+      "passed": true,
+      "detail": {
+        "bodyWidth": 1265,
+        "viewportWidth": 1280
+      }
+    },
+    {
+      "name": "website mobile success",
+      "passed": true,
+      "detail": {
+        "selectedTab": "Website Check",
+        "resultTitle": "Website readiness check needs attention",
+        "overallBadge": "WARNING",
+        "fields": {
+          "Submitted URL": "https://example.com",
+          "Reachability": "Reachable",
+          "HTTP status code": "200",
+          "HTTPS": "Enabled",
+          "Response time": "105 ms",
+          "Overall readiness": "WARNING"
+        },
+        "securityHeaderRows": 3,
+        "findings": 6,
+        "findingStatuses": [
+          "PASS",
+          "PASS",
+          "PASS",
+          "WARNING",
+          "WARNING",
+          "WARNING"
+        ],
+        "horizontalOverflow": false,
+        "bodyWidth": 390,
+        "viewportWidth": 390
+      }
+    },
+    {
+      "name": "website mobile no horizontal overflow",
+      "passed": true,
+      "detail": {
+        "bodyWidth": 390,
+        "viewportWidth": 390
+      }
+    },
+    {
+      "name": "dockerfile mobile PASS display",
+      "passed": true,
+      "detail": {
+        "selectedTab": "Dockerfile Analysis",
+        "resultTitle": "Dockerfile analysis passed",
+        "overallBadge": "PASS",
+        "findings": 5,
+        "findingNames": [
+          "FROM Instruction",
+          "Base Image Tag",
+          "Final Stage User",
+          "Health Check",
+          "COPY and ADD Usage"
+        ],
+        "findingStatuses": [
+          "PASS",
+          "PASS",
+          "PASS",
+          "PASS",
+          "PASS"
+        ],
+        "safetyNote": "Static text analysis only; the Dockerfile was not executed.",
+        "horizontalOverflow": false,
+        "bodyWidth": 390,
+        "viewportWidth": 390
+      }
+    },
+    {
+      "name": "dockerfile mobile no horizontal overflow",
+      "passed": true,
+      "detail": {
+        "bodyWidth": 390,
+        "viewportWidth": 390
+      }
+    },
+    {
+      "name": "no unexpected JS exceptions",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no console errors",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no unexpected HTTP 4xx/5xx responses",
+      "passed": true,
+      "detail": {
+        "allHttpErrors": [
+          {
+            "status": 400,
+            "url": "http://127.0.0.1:5173/api/checks/website",
+            "type": "Fetch"
+          }
+        ],
+        "unexpectedHttpErrors": []
+      }
+    }
+  ],
+  "consoleErrors": [],
+  "exceptions": [],
+  "httpErrors": [
+    {
+      "status": 400,
+      "url": "http://127.0.0.1:5173/api/checks/website",
+      "type": "Fetch"
+    }
+  ],
+  "unexpectedHttpErrors": [],
+  "screenshots": [
+    {
+      "filename": "website-success-desktop.png",
+      "width": 1265,
+      "height": 2102,
+      "bytes": 210116
+    },
+    {
+      "filename": "website-blocked-error-desktop.png",
+      "width": 1280,
+      "height": 900,
+      "bytes": 53114
+    },
+    {
+      "filename": "dockerfile-empty-error-desktop.png",
+      "width": 1265,
+      "height": 945,
+      "bytes": 70243
+    },
+    {
+      "filename": "dockerfile-pass-desktop.png",
+      "width": 1265,
+      "height": 1964,
+      "bytes": 182532
+    },
+    {
+      "filename": "dockerfile-warning-desktop.png",
+      "width": 1265,
+      "height": 1964,
+      "bytes": 180355
+    },
+    {
+      "filename": "dockerfile-fail-desktop.png",
+      "width": 1265,
+      "height": 1964,
+      "bytes": 192566
+    },
+    {
+      "filename": "website-success-mobile.png",
+      "width": 390,
+      "height": 2825,
+      "bytes": 196779
+    },
+    {
+      "filename": "dockerfile-pass-mobile.png",
+      "width": 390,
+      "height": 2582,
+      "bytes": 170173
+    }
+  ],
+  "screenshotVisualReview": "Not performed because image input is unsupported; screenshots were verified as nonblank artifacts and reviewed only through automated DOM/layout checks."
+}

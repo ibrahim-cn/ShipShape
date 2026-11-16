@@ -1,0 +1,45 @@
+Final browser verification summary
+- date: 2026-11-16
+- viewports: desktop 1280x900, mobile 390x844
+- initial desktop layout: PASS
+- website loading state: PASS
+- website desktop success: PASS
+- website desktop no horizontal overflow: PASS
+- website blocked URL error: PASS
+- website error desktop no horizontal overflow: PASS
+- dockerfile empty content validation: PASS
+- dockerfile empty validation desktop no horizontal overflow: PASS
+- dockerfile oversized validation: PASS
+- dockerfile oversized validation desktop no horizontal overflow: PASS
+- dockerfile loading state: PASS
+- dockerfile PASS display: PASS
+- dockerfile PASS desktop no horizontal overflow: PASS
+- dockerfile WARNING display: PASS
+- dockerfile WARNING desktop no horizontal overflow: PASS
+- dockerfile FAIL display: PASS
+- dockerfile FAIL desktop no horizontal overflow: PASS
+- dockerfile USER root warning: PASS
+- dockerfile USER root desktop no horizontal overflow: PASS
+- dockerfile HEALTHCHECK NONE warning: PASS
+- dockerfile HEALTHCHECK NONE desktop no horizontal overflow: PASS
+- website mobile success: PASS
+- website mobile no horizontal overflow: PASS
+- dockerfile mobile PASS display: PASS
+- dockerfile mobile no horizontal overflow: PASS
+- no unexpected JS exceptions: PASS
+- no console errors: PASS
+- no unexpected HTTP 4xx/5xx responses: PASS
+- console errors: 0
+- uncaught exceptions: 0
+- expected blocked website HTTP 400 responses: 1
+- unexpected HTTP 4xx/5xx responses: 0
+- screenshot website-success-desktop.png: 1265x2102, 210116 bytes
+- screenshot website-blocked-error-desktop.png: 1280x900, 53114 bytes
+- screenshot dockerfile-empty-error-desktop.png: 1265x945, 70243 bytes
+- screenshot dockerfile-pass-desktop.png: 1265x1964, 182532 bytes
+- screenshot dockerfile-warning-desktop.png: 1265x1964, 180355 bytes
+- screenshot dockerfile-fail-desktop.png: 1265x1964, 192566 bytes
+- screenshot website-success-mobile.png: 390x2825, 196779 bytes
+- screenshot dockerfile-pass-mobile.png: 390x2582, 170173 bytes
+- visual screenshot inspection: NOT PERFORMED (image input unsupported)
+- overall: PASS

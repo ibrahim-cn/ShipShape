@@ -1,0 +1,43 @@
+ShipShape Week 5 final Git review
+Date: 2026-11-16
+
+Branch: feature/week-05-core-implementation
+HEAD: 9f836bd3227674c40c646a4ad734efa12220bbaf
+
+Recent commits:
+9f836bd (HEAD -> feature/week-05-core-implementation) feat(dockerfile): add rule-based static analysis
+40fe98f fix(frontend): add favicon to prevent missing resource request
+aaa86fd feat(frontend): display complete website readiness analysis
+96b2c0c (origin/main, origin/HEAD, main) week 4 developments
+d0df580 align API design with implemented endpoints
+cb6de43 update README for Week 4 prototype.
+
+Working tree status:
+## feature/week-05-core-implementation
+?? evidence/week-04/backend-health.exit-code.txt
+?? evidence/week-04/backend-health.txt
+?? evidence/week-04/backend-tests.exit-code.txt
+?? evidence/week-04/environment.txt
+?? evidence/week-04/frontend-build.exit-code.txt
+?? evidence/week-04/git-commits.txt
+?? evidence/week-04/ports.txt
+?? evidence/week-05/
+?? report/
+
+Tracked diff stat:
+(none)
+
+Tracked diff whitespace check:
+(clean)
+
+Staged files:
+(none)
+
+Tracked Week 5 evidence files:
+(none)
+
+Notes:
+- Expected commits aaa86fd, 40fe98f, and 9f836bd are present.
+- No tracked source, documentation, or test changes are pending.
+- Week 5 evidence and report material remain untracked.
+- No staging, commit, merge, or push was performed during final verification.

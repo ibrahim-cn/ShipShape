@@ -1,0 +1,22 @@
+Final API verification summary
+- health: PASS
+  {"service": "shipshape-backend", "status": "UP"}
+- website success fields: PASS
+  {"findings": 6, "httpStatusCode": 200, "httpsEnabled": true, "overallStatus": "WARNING", "reachable": true, "responseTimeMs": 237, "securityHeaders": 3}
+- website blocked URL: PASS
+  {"error": "Host not allowed"}
+- dockerfile valid: PASS
+  {"Base Image Tag": "PASS", "COPY and ADD Usage": "PASS", "FROM Instruction": "PASS", "Final Stage User": "PASS", "Health Check": "PASS"}
+- dockerfile explicit latest: PASS
+  {"Base Image Tag": "WARNING", "COPY and ADD Usage": "PASS", "FROM Instruction": "PASS", "Final Stage User": "PASS", "Health Check": "PASS"}
+- dockerfile missing FROM: PASS
+  {"Base Image Tag": "WARNING", "COPY and ADD Usage": "PASS", "FROM Instruction": "FAIL", "Final Stage User": "WARNING", "Health Check": "WARNING"}
+- dockerfile USER root: PASS
+  {"Base Image Tag": "PASS", "COPY and ADD Usage": "PASS", "FROM Instruction": "PASS", "Final Stage User": "WARNING", "Health Check": "PASS"}
+- dockerfile HEALTHCHECK NONE: PASS
+  {"Base Image Tag": "PASS", "COPY and ADD Usage": "PASS", "FROM Instruction": "PASS", "Final Stage User": "PASS", "Health Check": "WARNING"}
+- dockerfile empty content: PASS
+  {"error": "Dockerfile content is required"}
+- dockerfile oversized content: PASS
+  {"error": "Dockerfile content is too large"}
+overall: PASS

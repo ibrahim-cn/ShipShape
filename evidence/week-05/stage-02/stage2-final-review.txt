@@ -1,0 +1,23 @@
+ShipShape Week 5 Stage 2 final review
+Date: 2026-11-16
+Branch: feature/week-05-core-implementation
+Reviewed commit: aaa86fd85541496382dcb6de68486117774781d2
+
+Screenshot files
+- evidence/week-05/stage-02/browser-success-desktop.png: 1265x2040, nonblank, 204453 bytes
+- evidence/week-05/stage-02/browser-success-mobile.png: 390x2766, nonblank, 191995 bytes
+- evidence/week-05/stage-02/browser-error-desktop.png: 1280x900, nonblank, 47873 bytes
+
+Limitation
+- The screenshot contents could not be visually inspected because image input is not supported in the review environment. No visual-review claim is made.
+- Automated browser checks from Stage 2 previously verified desktop/mobile DOM rendering, no mobile horizontal overflow, visible status output, and the blocked-input error state.
+
+Console 404 investigation
+- A headless Chrome network capture identified the missing request as GET /favicon.ico with status 404.
+- The application HTML had no favicon reference and frontend/public was absent.
+- Correction: added frontend/public/favicon.svg and referenced it from frontend/index.html.
+- Verification after correction: GET /favicon.svg returned HTTP 200; headless Chrome recorded no 404 responses.
+- Frontend production build passed after the correction.
+
+Stage 2 correction commit
+- 40fe98f fix(frontend): add favicon to prevent missing resource request

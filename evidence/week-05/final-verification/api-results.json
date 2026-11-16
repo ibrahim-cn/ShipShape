@@ -1,0 +1,104 @@
+{
+  "date": "2026-11-16",
+  "baseUrl": "http://127.0.0.1:8080",
+  "allPassed": true,
+  "checks": [
+    {
+      "name": "health",
+      "passed": true,
+      "detail": {
+        "service": "shipshape-backend",
+        "status": "UP"
+      }
+    },
+    {
+      "name": "website success fields",
+      "passed": true,
+      "detail": {
+        "httpStatusCode": 200,
+        "reachable": true,
+        "httpsEnabled": true,
+        "responseTimeMs": 237,
+        "securityHeaders": 3,
+        "findings": 6,
+        "overallStatus": "WARNING"
+      }
+    },
+    {
+      "name": "website blocked URL",
+      "passed": true,
+      "detail": {
+        "error": "Host not allowed"
+      }
+    },
+    {
+      "name": "dockerfile valid",
+      "passed": true,
+      "detail": {
+        "FROM Instruction": "PASS",
+        "Base Image Tag": "PASS",
+        "Final Stage User": "PASS",
+        "Health Check": "PASS",
+        "COPY and ADD Usage": "PASS"
+      }
+    },
+    {
+      "name": "dockerfile explicit latest",
+      "passed": true,
+      "detail": {
+        "FROM Instruction": "PASS",
+        "Base Image Tag": "WARNING",
+        "Final Stage User": "PASS",
+        "Health Check": "PASS",
+        "COPY and ADD Usage": "PASS"
+      }
+    },
+    {
+      "name": "dockerfile missing FROM",
+      "passed": true,
+      "detail": {
+        "FROM Instruction": "FAIL",
+        "Base Image Tag": "WARNING",
+        "Final Stage User": "WARNING",
+        "Health Check": "WARNING",
+        "COPY and ADD Usage": "PASS"
+      }
+    },
+    {
+      "name": "dockerfile USER root",
+      "passed": true,
+      "detail": {
+        "FROM Instruction": "PASS",
+        "Base Image Tag": "PASS",
+        "Final Stage User": "WARNING",
+        "Health Check": "PASS",
+        "COPY and ADD Usage": "PASS"
+      }
+    },
+    {
+      "name": "dockerfile HEALTHCHECK NONE",
+      "passed": true,
+      "detail": {
+        "FROM Instruction": "PASS",
+        "Base Image Tag": "PASS",
+        "Final Stage User": "PASS",
+        "Health Check": "WARNING",
+        "COPY and ADD Usage": "PASS"
+      }
+    },
+    {
+      "name": "dockerfile empty content",
+      "passed": true,
+      "detail": {
+        "error": "Dockerfile content is required"
+      }
+    },
+    {
+      "name": "dockerfile oversized content",
+      "passed": true,
+      "detail": {
+        "error": "Dockerfile content is too large"
+      }
+    }
+  ]
+}
