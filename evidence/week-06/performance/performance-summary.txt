@@ -1,0 +1,19 @@
+Performance summary
+====================
+
+NFR-01 verification used five different public URLs:
+- https://example.com
+- http://github.com
+- https://www.wikipedia.org
+- https://www.cloudflare.com
+- https://www.mozilla.org
+
+responseTimeMs now measures the total website check duration, including redirects.
+App-reported total durations (ms): 139, 962, 490, 451, 274
+min=139, max=962, mean=463.20, median=451.0
+Full curl total API latency (seconds): 0.169, 0.967, 0.495, 0.454, 0.278
+min=0.169, max=0.967, mean=0.473
+Target: 10000 ms. Failures: none.
+Result: PASS
+
+Low-volume observations only; no load test was performed.

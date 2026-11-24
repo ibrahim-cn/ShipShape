@@ -1,0 +1,1 @@
+{"service":"shipshape-backend","status":"UP"}

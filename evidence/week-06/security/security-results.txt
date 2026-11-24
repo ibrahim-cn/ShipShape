@@ -1,0 +1,31 @@
+Security and reliability validation
+=================================
+
+Live API cases:
+
+Non-resolving domain: expected=400 clear error; actual=HTTP 400 Host not allowed
+Unsupported scheme: expected=400 Unsupported scheme; actual=HTTP 400 Unsupported scheme
+Localhost SSRF: expected=400 Host not allowed; actual=HTTP 400 Host not allowed
+IPv6 loopback SSRF: expected=400 Host not allowed; actual=HTTP 400 Host not allowed
+Private IPv4 SSRF: expected=400 Host not allowed; actual=HTTP 400 Host not allowed
+Cloud metadata address: expected=400 Host not allowed; actual=HTTP 400 Host not allowed
+Path traversal upload: expected=400 Unsafe file path; actual=HTTP 400 Unsafe file path
+Absolute upload path: expected=400 Unsafe file path; actual=HTTP 400 Unsafe file path
+Duplicate normalized path: expected=400 Unsafe file path; actual=HTTP 400 Unsafe file path
+Unsafe YAML tag: expected=200 overallStatus=ERROR; parser error finding; actual=HTTP 200 ERROR (The Compose YAML could not be parsed safely.)
+Malformed YAML: expected=200 overallStatus=ERROR; parser error finding; actual=HTTP 200 ERROR (The Compose YAML could not be parsed safely.)
+Oversized upload: expected=400 Uploaded file is too large; actual=HTTP 400 Uploaded file is too large
+Missing files part: expected=400 Request failed; actual=HTTP 400 Request failed
+
+Automated evidence:
+- WebsiteCheckServiceTest covers malformed URLs, unsupported schemes, credentials in URLs, localhost, loopback, private, link-local, multicast, unspecified addresses, null, and empty input.
+- WebsiteCheckServiceMoreTest.connectionTimeout verifies the 8-second connection timeout deterministically with a mocked RestTemplate.
+- WebsiteCheckServiceMoreTest.redirectToForbiddenDestination verifies redirect-target revalidation.
+- ProjectInputServiceTest covers unsafe paths, duplicate paths, oversized files, too many files, total-byte limits, binary content, invalid UTF-8, null entries, missing names, and invalid project names.
+- ComposeAnalysisServiceTest covers unsafe YAML tags, excessive aliases, excessive nesting, oversized input, sanitized service identifiers, and absence of raw evidence.
+- ProjectAnalysisIntegrationTest.unsafeComposeFixtureReturnsParserErrorThroughRealPipeline verifies the same parser restriction through the real multipart pipeline.
+
+Limitations:
+- No real private host, cloud metadata service, or 169.254.169.254 content was contacted; requests were rejected before outbound network access.
+- No localhost-based slow server was used for a live timeout test because SSRF protection correctly blocks loopback; timeout behavior is covered by a deterministic unit test.
+- DNS rebinding is documented by the application as an unresolved limitation; no claim of complete protection is made.

@@ -1,0 +1,14 @@
+scenario,http_status,curl_total_seconds,app_total_response_time_ms,overall_status
+website-success,200,0.168898,139,WARNING
+website-http,200,0.048653,47,FAIL
+website-redirect,200,0.967317,962,PASS
+website-not-found,200,0.023913,20,FAIL
+website-status-401,200,0.457256,454,FAIL
+website-status-403,200,0.139867,135,FAIL
+website-status-500,200,0.139379,135,FAIL
+website-https-to-http,200,0.159322,156,FAIL
+website-wikipedia,200,0.494902,490,WARNING
+website-cloudflare,200,0.454416,451,PASS
+website-mozilla,200,0.277789,274,PASS
+website-dns-failure,400,0.007577,,
+website-whitespace,200,0.031396,29,WARNING

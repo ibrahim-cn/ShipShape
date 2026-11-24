@@ -1,0 +1,49 @@
+Authoritative requirement wording extracted from the project PDFs
+================================================================
+
+Source: report/<week2-report>.pdf, physical page 5 (printed page 5), sections 5-6; NFR-03 continues on physical page 6.
+Same wording repeated: report/<week3-report>.pdf, physical page 6 (printed page 5), sections 5-6; NFR-03 continues on physical page 7.
+
+5. Functional Requirements
+
+The following functional requirements define what the system must do in the first version. Each requirement describes an observable behavior that can be verified with a test or demonstration. These are requirements the system must meet; they have not yet been implemented.
+
+ID Requirement Statement Priority
+
+FR-01 The system shall allow a user to submit a website URL and check whether the website is reachable, displaying the HTTP status code returned by the server. Must
+
+FR-02 The system shall measure and display the response time of the submitted website. Must
+
+FR-03 The system shall check whether the submitted website uses HTTPS and report the result. Must
+
+FR-04 The system shall inspect selected HTTP security headers in the response and identify missing or potentially misconfigured headers. Should
+
+FR-05 The system shall accept a Dockerfile as a text file and analyze it using predefined rules. The Dockerfile shall never be executed. Should
+
+FR-06 The system shall display each check result as Pass, Warning, or Fail with a short explanation and an improvement suggestion when applicable. Must
+
+6. Non-Functional Requirements
+
+The following non-functional requirements describe quality attributes of the system. Numerical targets marked as proposed targets may be adjusted during development. The verification methods describe how each requirement will be checked once the feature is implemented; they do not represent completed tests.
+
+ID Quality Requirement How to Verify
+
+NFR-01 Performance
+
+All website checks for a single URL shall complete within 10 seconds under normal network conditions (proposed target).
+
+Once the checking feature is implemented, submit five different public URLs and record the start and end time of each check. Compare each measured duration against the 10-second target and document the results. This measurement has not yet been performed.
+
+NFR-02 Security
+
+The system shall validate user-provided URLs before making any request. The URL validation design shall account for: localhost and private IPv4 addresses; IPv6 loopback (::1) and private/internal addresses; domain names that resolve to private or internal addresses via DNS; redirect chains where each redirect target is re-validated; and blocking of internal addresses at both the DNS resolution and connection stages.
+
+Once the validation logic is implemented, test the following cases: URLs pointing to localhost, 127.0.0.1, ::1, and private IPv4 ranges (10.x.x.x, 172.16.x.x-172.31.x.x, 192.168.x.x); a domain name that resolves to a private address; and a public URL that redirects to an internal address. Confirm that each case is rejected with a clear error message and that no request is sent to the internal address.
+
+NFR-03 Reliability
+
+The system shall handle unreachable URLs, timeouts, and invalid responses gracefully by displaying an informative message instead of crashing.
+
+Once the checking feature is implemented, test with: a URL that does not resolve (e.g., a non-existent domain), a URL that causes a connection timeout, and a URL that returns an unexpected or malformed response. Confirm that in each case the system displays a meaningful error or warning message and remains operational.
+
+Added during development and not present as numbered FR/NFR IDs in Weeks 1-5: Docker Compose static analysis, shared project multipart analysis, coverage metadata, sanitized evidence, and file-path validation.

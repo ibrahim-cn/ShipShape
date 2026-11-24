@@ -1,0 +1,21 @@
+Test class summary
+=================
+
+com.shipshape.backend.BackendApplicationTests: tests=1, failures=0, errors=0, skipped=0, time=1.008s
+com.shipshape.backend.controller.DockerfileAnalysisControllerTest: tests=2, failures=0, errors=0, skipped=0, time=0.177s
+com.shipshape.backend.controller.HealthControllerTest: tests=1, failures=0, errors=0, skipped=0, time=0.085s
+com.shipshape.backend.controller.ProjectAnalysisControllerTest: tests=2, failures=0, errors=0, skipped=0, time=0.126s
+com.shipshape.backend.controller.WebsiteCheckControllerTest: tests=1, failures=0, errors=0, skipped=0, time=0.220s
+com.shipshape.backend.dto.FindingStatusTest: tests=4, failures=0, errors=0, skipped=0, time=0.024s
+com.shipshape.backend.integration.ProjectAnalysisIntegrationTest: tests=6, failures=0, errors=0, skipped=0, time=0.286s
+com.shipshape.backend.service.ComposeAnalysisServiceTest: tests=36, failures=0, errors=0, skipped=0, time=0.047s
+com.shipshape.backend.service.DockerfileAnalysisServiceTest: tests=53, failures=0, errors=0, skipped=0, time=0.026s
+com.shipshape.backend.service.ProjectAnalysisServiceTest: tests=11, failures=0, errors=0, skipped=0, time=0.014s
+com.shipshape.backend.service.ProjectInputServiceTest: tests=13, failures=0, errors=0, skipped=0, time=0.009s
+com.shipshape.backend.service.WebsiteCheckServiceMoreTest: tests=14, failures=0, errors=0, skipped=0, time=0.342s
+com.shipshape.backend.service.WebsiteCheckServiceTest: tests=13, failures=0, errors=0, skipped=0, time=0.014s
+
+Aggregate
+=========
+tests=157, failures=0, errors=0, skipped=0, summed_test_time=2.378s
+test_classes=13

@@ -16,18 +16,20 @@ The objective of ShipShape is to develop a web-based tool that helps developers 
 
 ## Current Status
 
-**Week 5 – Website Readiness Details and Dockerfile Static Analysis**
+**Local prototype with website readiness, Dockerfile analysis, Compose analysis, and shared backend project analysis**
 
 ShipShape now has a working local prototype with a React and TypeScript frontend connected to a Java 17 and Spring Boot backend. The interface provides two checks:
 
 - **Website Check:** submit a public URL, then review reachability, HTTP status, response time, HTTPS usage, security headers, the overall readiness status, and individual findings.
-- **Dockerfile Analysis:** paste Dockerfile content, then review rule-based `PASS`, `WARNING`, and `FAIL` findings for base images, user configuration, health checks, and file-transfer instructions.
+- **Dockerfile Analysis:** paste Dockerfile content, then review rule-based findings for base images, final-stage users, working directories, startup commands, file-transfer instructions, dangerous permissions, health checks, and unsupported syntax.
 
-The Dockerfile endpoint is `POST /api/checks/dockerfile`. Dockerfile content is analyzed as text and is never executed. Website checks continue to use `POST /api/checks/website`.
+The Dockerfile endpoint is `POST /api/checks/dockerfile`. Dockerfile content is analyzed as text and is never executed. Website checks continue to use `POST /api/checks/website`. The backend-only project endpoint is `POST /api/projects/analyze/files`; it applies the Dockerfile and Compose rule sets to uploaded project files.
+
+The shared project pipeline reports `PASS`, `WARNING`, `FAIL`, `NOT_CHECKED`, `NOT_APPLICABLE`, and `ERROR`, with rule-specific severities and explicit coverage fields. It separates `implementedModules`, `incompleteModules`, and `notCheckedModules`; an overall `PASS` cannot hide incomplete coverage, and a missing Dockerfile or Compose file is reported as `NOT_CHECKED` rather than treated as a pass.
 
 Verification for the current implementation recorded:
 
-- The backend test suite completed with **49 passing tests** (0 failures, 0 errors, 0 skipped) under Java 17.
+- The backend test suite completed with **157 passing tests** (0 failures, 0 errors, 0 skipped) under Java 17.
 - The frontend production build completed successfully with `npm run build`.
 
 The application currently runs locally only. It has not been deployed publicly.
@@ -55,7 +57,7 @@ The project design documents are available in the repository:
 - [API design](api/api-design.md)
 - [AWS service selection](architecture/aws-service-selection.md)
 
-The implemented check endpoints are `POST /api/checks/website` and `POST /api/checks/dockerfile`, as documented in the API section below.
+The implemented endpoints are `GET /api/health`, `POST /api/checks/website`, `POST /api/checks/dockerfile`, and `POST /api/projects/analyze/files`, as documented in [api-design.md](api/api-design.md).
 
 ## Project Structure
 
@@ -90,13 +92,50 @@ ShipShape/
 
 The analyzer checks:
 
-1. A valid `FROM` instruction is present. Multi-stage builds are supported.
-2. Explicit `:latest` base image tags are reported as warnings. A missing tag is not automatically treated as `:latest`.
-3. The final stage should set a non-root `USER`. Missing users and `USER root` or `USER 0` are warnings. A `USER` in an earlier build stage does not satisfy the final stage.
-4. The final stage should define a `HEALTHCHECK`. Missing health checks and `HEALTHCHECK NONE` are warnings.
-5. `ADD` usage is reported as a warning because it can fetch remote URLs and extract archives automatically. `COPY` is recommended where those extra behaviors are not required; `ADD` is not automatically a failure.
+1. `DOCKER-001`: a readable `FROM` instruction is present. Multi-stage builds are supported through final-stage aliases.
+2. `DOCKER-002`: explicit `:latest` and missing tags are warnings; variable references are `NOT_CHECKED`; digest, explicit version, `scratch`, and stage-alias references pass with limitations.
+3. `DOCKER-003`: `USER root` or `USER 0` in the final-stage chain is a warning; a literal non-root user passes; missing or variable users are `NOT_CHECKED`.
+4. `DOCKER-004`: an explicit `WORKDIR` in the final-stage chain passes; a missing working directory is a warning.
+5. `DOCKER-005`: an explicit `CMD` or `ENTRYPOINT` in the final-stage chain passes; a missing explicit startup command is a warning.
+6. `DOCKER-006`: remote `ADD`, broad `COPY` without `.dockerignore`, and archive `ADD` produce warnings; plain `COPY` passes. `.dockerignore` rules are not parsed.
+7. `DOCKER-007`: explicit broad permission patterns such as `chmod 777` or `COPY --chmod=0777` produce warnings.
+8. `DOCKER.SYNTAX`: unsupported instruction keywords are reported as `NOT_CHECKED` instead of being silently treated as valid.
 
-Comments, blank lines, leading whitespace, case-insensitive instruction names, CRLF line endings, and backslash line continuations are handled. The maximum accepted content length is 100,000 characters.
+Comments, blank lines, leading whitespace, case-insensitive instruction names, CRLF line endings, and backslash line continuations are handled. Evidence contains only `KEYWORD [line N]`; instruction arguments and secrets are never returned. The maximum accepted content length is 100,000 characters.
+
+### Docker Compose Static Analysis
+
+Compose analysis is implemented in the shared multipart project pipeline. It accepts `compose.yaml`, `compose.yml`, `docker-compose.yaml`, and `docker-compose.yml`, then parses each Compose file as data with a restricted SnakeYAML parser. No Compose command, container runtime, shell command, network lookup, or host file resolution is performed. Findings are per service where applicable and include a sanitized `serviceIdentifier` field.
+
+The ten required production-readiness checks are:
+
+1. `COMPOSE-001`: Compose structure validation with a non-empty, string-keyed `services` mapping.
+2. `COMPOSE-002`: image version policy; untagged images and explicit `latest` are warnings, digests and explicit version tags pass, and variables or build-only services are `NOT_CHECKED`.
+3. `COMPOSE-003`: privileged containers; explicit `true` fails, explicit `false` passes, and unresolved values are `NOT_CHECKED`.
+4. `COMPOSE-004`: container user; root forms fail, explicit non-root users pass, and missing or variable users are `NOT_CHECKED`.
+5. `COMPOSE-005`: Docker socket access through short and long volume syntax, including read-only mounts; variable paths that could resolve to a socket are `NOT_CHECKED` rather than an unconditional pass.
+6. `COMPOSE-006`: host network isolation; host network, PID, and IPC usage are separate contextual findings rather than a blanket failure.
+7. `COMPOSE-007`: published ports; explicit bindings, dynamically assigned host ports, `expose`, IPv6, malformed declarations, and identifiable database/administrative ports are distinguished.
+8. `COMPOSE-008`: healthcheck configuration; missing, disabled, `NONE` scalar or list, unresolved disable, malformed, trivial always-successful, inherited, and variable forms are distinguished without claiming runtime success.
+9. `COMPOSE-009`: restart policy; supported policies pass, missing or unrecognized values produce contextual warnings, and `always` is not treated as inherently unsuitable.
+10. `COMPOSE-010`: risky volume mounts; host root, sensitive directories, named, anonymous, read-only, variable, malformed, and Docker socket mounts are distinguished, with an explicit pass when all evaluated mounts are safe.
+
+Supporting checks are reported separately: `COMPOSE.SUPPORT.FILE_NAME`, `COMPOSE.SUPPORT.SAFE_YAML`, `COMPOSE.SUPPORT.DOCUMENT_COUNT`, `COMPOSE.SUPPORT.IMAGE_OR_BUILD`, and `COMPOSE.SUPPORT.ENVIRONMENT_SECRETS`. Unsafe YAML tags, duplicate keys, recursive keys, excessive aliases, excessive nesting, blank content, and content over 200,000 characters produce `COMPOSE.PARSE_ERROR` without raw parser messages. Environment references with literal fallback defaults fail the narrow secret check; references without literal fallbacks, inheritance, and empty values pass. Environment values and fallback literals are never returned as evidence.
+
+Demonstration fixtures are in `backend/src/test/resources/compose-analysis/`: `fixture-a/compose.yaml` is the corrected comparable configuration and `fixture-b/docker-compose.yml` contains multiple deliberately risky services. Detailed evidence and remaining limitations are documented in that directory's README.
+
+| Requirement | Implementation method | Primary test | Demonstration fixture | Remaining limitation |
+|---|---|---|---|---|
+| `COMPOSE-001` structure validation | Parsed `services` mapping check in `ComposeAnalysisService` | `missingServicesFailsInsteadOfPassing` | Both fixtures | Override files are not merged. |
+| `COMPOSE-002` image version policy | Static image/tag/digest classification | `imageTagsDistinguishDefaultLatestExplicitLatestDigestAndBuilds` | Fixture B (`postgres:latest`), Fixture A (versioned images) | No registry lookup or immutability proof. |
+| `COMPOSE-003` privileged containers | Boolean and variable classification | `findingsIncludeRuleMetadataAndSafeEvidence` | Fixture B `api` | Runtime capability behavior is not inspected. |
+| `COMPOSE-004` container user | Literal user/group parsing with root variants | `rootUserVariantsProduceFindings` | Fixture B `db`, Fixture A (non-root users) | Image-level `USER` inheritance is not resolved. |
+| `COMPOSE-005` Docker socket access | Short/long volume source matching with socket-like variable detection | `variableSocketLikeMountsAreNotCheckedAndConfirmedSocketsStillFail` | Fixture B `api` | Daemon exploitability is not claimed. |
+| `COMPOSE-006` host network isolation | `network_mode`, `pid`, and `ipc` checks | `hostNetworkModeIsContextualWarningAndNamespacesAreSeparate` | Fixture B `api`, `worker` | Actual host namespace permissions are not inspected. |
+| `COMPOSE-007` published ports | Explicit/dynamic port binding, `expose`, and database-port classification | `publishedPortsDistinguishBindingsDynamicPortsAndExpose`, `singleTokenDatabasePortIsDynamicPublicationNotContainerOnly` | Fixture B | Public reachability and random port allocation are not inferred. |
+| `COMPOSE-008` healthcheck configuration | Healthcheck block, test form, disable, and trivial-command classification | `missingAndDisabledHealthchecksAreDistinguished`, `triviallySuccessfulHealthcheckCommandsAreWarned` | Fixture B `worker` | Runtime success and image inheritance are not verified. |
+| `COMPOSE-009` restart policy | Literal policy and YAML boolean normalization | `validRestartPoliciesPassAndAlwaysIsNotInherentlyRejected` | Fixture B `worker` | Platform restart outcomes are not evaluated. |
+| `COMPOSE-010` risky volume mounts | Short/long volume, bind, named, read-only, variable, and malformed classification | `riskyVolumeMountsDistinguishBindsVolumesAndVariables`, `allSafeVolumeMountsStillEmitPassFinding` | Fixture B `api`, Fixture A `db` | Host paths and mounted contents are not resolved. |
 
 ### Health Check
 
@@ -108,6 +147,7 @@ Website URL checks validate user input and block requests to localhost, private 
 
 ## Planned Functionality
 
+- Add the remaining analyzers for dependencies, secrets, environment configuration, ignore files, production Spring configuration, CI/CD, health/reliability, and vulnerability feeds.
 - Complete broader frontend and end-to-end validation evidence.
 - Prepare and complete AWS deployment.
 - Refine the README and final project documentation.
@@ -121,6 +161,7 @@ Website URL checks validate user input and block requests to localhost, private 
 - Response-time measurement
 - Checks for selected HTTP security headers
 - Rule-based Dockerfile analysis
+- Rule-based Docker Compose static analysis
 - Results with explanations and improvement suggestions
 - A web interface for submitting URLs and Dockerfiles
 - Deployment on AWS
@@ -131,10 +172,10 @@ Website URL checks validate user input and block requests to localhost, private 
 - Continuous website monitoring
 - Kubernetes configuration analysis
 - Automatic correction of detected issues
-- Execution of uploaded Dockerfiles
+- Execution of uploaded Dockerfiles or Compose files
 - Guaranteeing the complete security of an application
 
-For safety, Dockerfile content is analyzed as text and is never executed. Website URL checks validate user input and block requests to private or internal network addresses, including domains that resolve to these addresses and redirects to internal addresses.
+For safety, Dockerfile and Compose content is analyzed as text and is never executed. Website URL checks validate user input and block requests to private or internal network addresses, including domains that resolve to these addresses and redirects to internal addresses.
 
 ## Local Development
 
@@ -283,9 +324,42 @@ Response fields:
 }
 ```
 
-The complete response contains five findings in this order: `FROM Instruction`, `Base Image Tag`, `Final Stage User`, `Health Check`, and `COPY and ADD Usage`.
+The complete response contains eight findings in rule-catalog order: `FROM Instruction`, `Base Image Tag`, `Final Stage User`, `Working Directory`, `Startup Command`, `COPY and ADD Usage`, `Dangerous Permissions`, and `Unsupported Syntax` when applicable.
 
 Dockerfile content is never executed. The request is rejected with HTTP 400 when the content is missing, blank, or larger than 100,000 characters.
+
+### `POST /api/projects/analyze/files`
+
+Accepts multipart project files and returns shared-pipeline analysis results. This endpoint is backend-only; no upload UI is provided yet.
+
+Request:
+
+```bash
+curl -X POST http://localhost:8080/api/projects/analyze/files \
+  -F "files=@Dockerfile" \
+  -F "files=@compose.yaml" \
+  -F "projectName=demo"
+```
+
+Abbreviated response shape (not an observed response):
+
+```json
+{
+  "source": "MULTIPART_FILES",
+  "projectName": "demo",
+  "overallStatus": "WARNING",
+  "coverageComplete": false,
+  "implementedModules": ["DOCKERFILE", "COMPOSE"],
+  "incompleteModules": ["SECRETS", "ENVIRONMENT", "IGNORE", "SPRING_CONFIG", "DEPENDENCIES", "HEALTH_RELIABILITY", "CI_CD", "VULNERABILITIES"],
+  "notCheckedModules": ["SECRETS", "ENVIRONMENT", "IGNORE", "SPRING_CONFIG", "DEPENDENCIES", "HEALTH_RELIABILITY", "CI_CD", "VULNERABILITIES"],
+  "inventory": [
+    { "path": "Dockerfile", "type": "DOCKERFILE", "analyzed": true, "analysisStatus": "ANALYZED" },
+    { "path": "compose.yaml", "type": "COMPOSE", "analyzed": true, "analysisStatus": "ANALYZED" }
+  ]
+}
+```
+
+The complete response includes standardized findings, per-module summaries, the file inventory, and limitations. Uploaded bytes are read only for the request and are not persisted by the application; the servlet container may spool multipart parts to temporary storage.
 
 ## Verification Scenarios
 
@@ -327,7 +401,7 @@ Open the Dockerfile Analysis tab and submit:
 ```dockerfile
 FROM node:20-alpine
 WORKDIR /app
-COPY . .
+COPY package.json .
 USER node
 HEALTHCHECK CMD node -e "process.exit(0)"
 CMD ["node", "server.js"]
@@ -336,7 +410,7 @@ CMD ["node", "server.js"]
 Expected result:
 
 - The overall status is `PASS`.
-- The response contains five findings with `PASS` status.
+- The response contains eight findings; evaluated rules return `PASS`.
 
 ### Scenario 4: Dockerfile with Warnings
 
@@ -352,8 +426,25 @@ Expected result:
 
 - The overall status is `WARNING`.
 - The explicit `:latest` tag and root user are reported as warnings.
-- The missing health check is reported as a warning.
+- The missing working directory, missing startup command, broad copy, and missing health check are reported with their rule-specific severities.
 - The Dockerfile is analyzed as text and is not executed.
+
+### Scenario 5: Compose File Through the Project Endpoint
+
+From a directory containing the saved Compose file, submit a controlled multipart request:
+
+```bash
+curl -X POST http://localhost:8080/api/projects/analyze/files \
+  -F "files=@compose.yaml" \
+  -F "projectName=compose-demo"
+```
+
+For a file containing `nginx:latest`, `privileged: true`, and `DB_PASSWORD=hunter2`, the expected result is:
+
+- The response contains findings for the Compose rule set.
+- `:latest`, privileged mode, host namespaces, the secret-like environment key, and `restart: always` are reported explicitly.
+- The fake environment value is not included in explanations or evidence.
+- The Compose file is parsed as YAML data and is never executed with Docker Compose.
 
 ## Testing and Build Commands
 
@@ -369,7 +460,7 @@ JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home mvn test
 The current verification run recorded:
 
 ```text
-Tests run: 49, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 117, Failures: 0, Errors: 0, Skipped: 0
 BUILD SUCCESS
 ```
 
@@ -386,8 +477,11 @@ This runs the TypeScript check and the Vite production build. The current implem
 
 ## Limitations
 
-- Dockerfile analysis is static and rule-based. It does not build an image, run a container, execute Dockerfile instructions, or provide a complete security audit.
-- The analyzer covers the five documented rules and does not evaluate every Dockerfile best practice.
+- Dockerfile analysis is static and rule-based. It does not build an image, run a container, execute Dockerfile instructions, check registry state, parse `.dockerignore` rules, or provide a complete security audit.
+- The Dockerfile analyzer covers the eight documented rules and does not evaluate every Dockerfile best practice.
+- Compose analysis is static and rule-based. It parses each file independently, does not merge override files, and does not resolve variables, `env_file` contents, registry state, or host paths.
+- Only Dockerfile and Compose text rules are implemented in the shared project pipeline; other declared modules are reported as `NOT_CHECKED`.
+- ZIP input, GitHub repository input, and project upload UI are not implemented.
 - AWS deployment is not completed, and the application is not publicly deployed.
 - The frontend currently relies on the Vite development proxy and requires the backend to be running locally.
 - Frontend automated tests are not implemented yet.
@@ -407,7 +501,7 @@ This runs the TypeScript check and the Vite production build. The current implem
 | Week 8 | Report completion, README refinement, and AWS deployment preparation |
 | Week 9 | AWS deployment, final demonstration, and presentation |
 
-The plan may be adjusted as development progresses. Week 5 is the current stage; later milestones remain planned work.
+The plan may be adjusted as development progresses. The Week 5 website and Dockerfile work and the Task 3 Compose analysis are implemented; later milestones remain planned work.
 
 ## GitHub Issues
 

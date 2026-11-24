@@ -1,0 +1,5 @@
+0f264bc docs(evidence): record Week 5 final verification
+9f836bd feat(dockerfile): add rule-based static analysis
+40fe98f fix(frontend): add favicon to prevent missing resource request
+aaa86fd feat(frontend): display complete website readiness analysis
+96b2c0c week 4 developments

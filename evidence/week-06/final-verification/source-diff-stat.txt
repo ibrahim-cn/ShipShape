@@ -1,0 +1,14 @@
+ README.md                                          | 138 +++-
+ api/api-design.md                                  | 319 ++++++--
+ architecture/component-design.md                   |  91 ++-
+ backend/pom.xml                                    |   5 +
+ .../java/com/shipshape/backend/dto/Finding.java    | 104 +++
+ .../backend/dto/WebsiteCheckResponse.java          |  18 +
+ .../backend/service/DockerfileAnalysisService.java | 834 +++++++++++++++------
+ .../backend/service/WebsiteCheckService.java       | 113 ++-
+ backend/src/main/resources/application.properties  |   3 +
+ .../service/DockerfileAnalysisServiceTest.java     | 588 +++++++++++++--
+ .../service/WebsiteCheckServiceMoreTest.java       | 130 +++-
+ frontend/src/components/CheckResult.tsx            |   5 +
+ frontend/src/types/websiteCheck.ts                 |   2 +
+ 13 files changed, 1937 insertions(+), 413 deletions(-)

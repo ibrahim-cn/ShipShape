@@ -1,0 +1,1 @@
+cases=8 console=7 page_errors=0 failures=none

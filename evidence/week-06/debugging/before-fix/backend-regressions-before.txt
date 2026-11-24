@@ -1,0 +1,232 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------------< com.shipshape:backend >------------------------
+[INFO] Building  0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ backend ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ backend ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 33 source files with javac [debug parameters release 17] to target/classes
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ backend ---
+[INFO] Copying 7 resources from src/test/resources to target/test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ backend ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 13 source files with javac [debug parameters release 17] to target/test-classes
+[INFO] <repo>/backend/src/test/java/com/shipshape/backend/service/WebsiteCheckServiceMoreTest.java: <repo>/backend/src/test/java/com/shipshape/backend/service/WebsiteCheckServiceMoreTest.java uses unchecked or unsafe operations.
+[INFO] <repo>/backend/src/test/java/com/shipshape/backend/service/WebsiteCheckServiceMoreTest.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- surefire:3.5.6:test (default-test) @ backend ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.shipshape.backend.service.WebsiteCheckServiceMoreTest
+Java HotSpot(TM) 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+[ERROR] Tests run: 13, Failures: 4, Errors: 4, Skipped: 0, Time elapsed: 0.806 s <<< FAILURE! -- in com.shipshape.backend.service.WebsiteCheckServiceMoreTest
+[ERROR] com.shipshape.backend.service.WebsiteCheckServiceMoreTest.httpsToHttpRedirectReportsInsecureFinalConnection -- Time elapsed: 0.495 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <false> but was: <true>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:158)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:139)
+	at org.junit.jupiter.api.AssertFalse.failNotFalse(AssertFalse.java:69)
+	at org.junit.jupiter.api.AssertFalse.assertFalse(AssertFalse.java:41)
+	at org.junit.jupiter.api.AssertFalse.assertFalse(AssertFalse.java:35)
+	at org.junit.jupiter.api.Assertions.assertFalse(Assertions.java:246)
+	at com.shipshape.backend.service.WebsiteCheckServiceMoreTest.httpsToHttpRedirectReportsInsecureFinalConnection(WebsiteCheckServiceMoreTest.java:158)
+
+[ERROR] com.shipshape.backend.service.WebsiteCheckServiceMoreTest.emptyCspIsReportedAsMisconfigured -- Time elapsed: 0.005 s <<< ERROR!
+org.mockito.exceptions.misusing.UnfinishedStubbingException: 
+
+Unfinished stubbing detected here:
+-> at com.shipshape.backend.service.WebsiteCheckServiceMoreTest.emptyCspIsReportedAsMisconfigured(WebsiteCheckServiceMoreTest.java:185)
+
+E.g. thenReturn() may be missing.
+Examples of correct stubbing:
+    when(mock.isOk()).thenReturn(true);
+    when(mock.isOk()).thenThrow(exception);
+    doThrow(exception).when(mock).someVoidMethod();
+Hints:
+ 1. missing thenReturn()
+ 2. you are trying to stub a final method, which is not supported
+ 3. you are stubbing the behaviour of another mock inside before 'thenReturn' instruction is completed, possibly on another thread
+
+	at com.shipshape.backend.service.WebsiteCheckServiceMoreTest.response(WebsiteCheckServiceMoreTest.java:118)
+	at com.shipshape.backend.service.WebsiteCheckServiceMoreTest.emptyCspIsReportedAsMisconfigured(WebsiteCheckServiceMoreTest.java:186)
+
+[ERROR] com.shipshape.backend.service.WebsiteCheckServiceMoreTest.totalDeadlineIsEnforcedAcrossRedirects -- Time elapsed: 0.133 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: Redirect loop detected ==> expected: <true> but was: <false>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:158)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:139)
+	at org.junit.jupiter.api.AssertTrue.failNotTrue(AssertTrue.java:69)
+	at org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:41)
+	at org.junit.jupiter.api.Assertions.assertTrue(Assertions.java:228)
+	at com.shipshape.backend.service.WebsiteCheckServiceMoreTest.totalDeadlineIsEnforcedAcrossRedirects(WebsiteCheckServiceMoreTest.java:217)
+
+[ERROR] com.shipshape.backend.service.WebsiteCheckServiceMoreTest.httpToHttpsRedirectReportsSecureFinalConnection -- Time elapsed: 0.003 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <true> but was: <false>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:158)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:139)
+	at org.junit.jupiter.api.AssertTrue.failNotTrue(AssertTrue.java:69)
+	at org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:41)
+	at org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:35)
+	at org.junit.jupiter.api.Assertions.assertTrue(Assertions.java:195)
+	at com.shipshape.backend.service.WebsiteCheckServiceMoreTest.httpToHttpsRedirectReportsSecureFinalConnection(WebsiteCheckServiceMoreTest.java:147)
+
+[ERROR] com.shipshape.backend.service.WebsiteCheckServiceMoreTest.responseTimeMsMeasuresWholeRedirectChain -- Time elapsed: 0.132 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: responseTimeMs=66 ==> expected: <true> but was: <false>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:158)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:139)
+	at org.junit.jupiter.api.AssertTrue.failNotTrue(AssertTrue.java:69)
+	at org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:41)
+	at org.junit.jupiter.api.Assertions.assertTrue(Assertions.java:228)
+	at com.shipshape.backend.service.WebsiteCheckServiceMoreTest.responseTimeMsMeasuresWholeRedirectChain(WebsiteCheckServiceMoreTest.java:205)
+
+[ERROR] com.shipshape.backend.service.WebsiteCheckServiceMoreTest.httpErrorResponseIsReachableAndReportsHttpStatusFailure -- Time elapsed: 0.003 s <<< ERROR!
+org.mockito.exceptions.misusing.UnfinishedStubbingException: 
+
+Unfinished stubbing detected here:
+-> at com.shipshape.backend.service.WebsiteCheckServiceMoreTest.httpErrorResponseIsReachableAndReportsHttpStatusFailure(WebsiteCheckServiceMoreTest.java:131)
+
+E.g. thenReturn() may be missing.
+Examples of correct stubbing:
+    when(mock.isOk()).thenReturn(true);
+    when(mock.isOk()).thenThrow(exception);
+    doThrow(exception).when(mock).someVoidMethod();
+Hints:
+ 1. missing thenReturn()
+ 2. you are trying to stub a final method, which is not supported
+ 3. you are stubbing the behaviour of another mock inside before 'thenReturn' instruction is completed, possibly on another thread
+
+	at com.shipshape.backend.service.WebsiteCheckServiceMoreTest.response(WebsiteCheckServiceMoreTest.java:118)
+	at com.shipshape.backend.service.WebsiteCheckServiceMoreTest.httpErrorResponseIsReachableAndReportsHttpStatusFailure(WebsiteCheckServiceMoreTest.java:132)
+
+[ERROR] com.shipshape.backend.service.WebsiteCheckServiceMoreTest.hstsMaxAgeZeroIsReportedAsMisconfigured -- Time elapsed: 0.003 s <<< ERROR!
+org.mockito.exceptions.misusing.UnfinishedStubbingException: 
+
+Unfinished stubbing detected here:
+-> at com.shipshape.backend.service.WebsiteCheckServiceMoreTest.hstsMaxAgeZeroIsReportedAsMisconfigured(WebsiteCheckServiceMoreTest.java:165)
+
+E.g. thenReturn() may be missing.
+Examples of correct stubbing:
+    when(mock.isOk()).thenReturn(true);
+    when(mock.isOk()).thenThrow(exception);
+    doThrow(exception).when(mock).someVoidMethod();
+Hints:
+ 1. missing thenReturn()
+ 2. you are trying to stub a final method, which is not supported
+ 3. you are stubbing the behaviour of another mock inside before 'thenReturn' instruction is completed, possibly on another thread
+
+	at com.shipshape.backend.service.WebsiteCheckServiceMoreTest.response(WebsiteCheckServiceMoreTest.java:118)
+	at com.shipshape.backend.service.WebsiteCheckServiceMoreTest.hstsMaxAgeZeroIsReportedAsMisconfigured(WebsiteCheckServiceMoreTest.java:166)
+
+[ERROR] com.shipshape.backend.service.WebsiteCheckServiceMoreTest.invalidXContentTypeOptionsIsReportedAsMisconfigured -- Time elapsed: 0.002 s <<< ERROR!
+org.mockito.exceptions.misusing.UnfinishedStubbingException: 
+
+Unfinished stubbing detected here:
+-> at com.shipshape.backend.service.WebsiteCheckServiceMoreTest.invalidXContentTypeOptionsIsReportedAsMisconfigured(WebsiteCheckServiceMoreTest.java:175)
+
+E.g. thenReturn() may be missing.
+Examples of correct stubbing:
+    when(mock.isOk()).thenReturn(true);
+    when(mock.isOk()).thenThrow(exception);
+    doThrow(exception).when(mock).someVoidMethod();
+Hints:
+ 1. missing thenReturn()
+ 2. you are trying to stub a final method, which is not supported
+ 3. you are stubbing the behaviour of another mock inside before 'thenReturn' instruction is completed, possibly on another thread
+
+	at com.shipshape.backend.service.WebsiteCheckServiceMoreTest.response(WebsiteCheckServiceMoreTest.java:118)
+	at com.shipshape.backend.service.WebsiteCheckServiceMoreTest.invalidXContentTypeOptionsIsReportedAsMisconfigured(WebsiteCheckServiceMoreTest.java:176)
+
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Failures: 
+[ERROR]   WebsiteCheckServiceMoreTest.httpToHttpsRedirectReportsSecureFinalConnection:147 expected: <true> but was: <false>
+[ERROR]   WebsiteCheckServiceMoreTest.httpsToHttpRedirectReportsInsecureFinalConnection:158 expected: <false> but was: <true>
+[ERROR]   WebsiteCheckServiceMoreTest.responseTimeMsMeasuresWholeRedirectChain:205 responseTimeMs=66 ==> expected: <true> but was: <false>
+[ERROR]   WebsiteCheckServiceMoreTest.totalDeadlineIsEnforcedAcrossRedirects:217 Redirect loop detected ==> expected: <true> but was: <false>
+[ERROR] Errors: 
+[ERROR]   WebsiteCheckServiceMoreTest.emptyCspIsReportedAsMisconfigured:186->response:118 UnfinishedStubbing 
+Unfinished stubbing detected here:
+-> at com.shipshape.backend.service.WebsiteCheckServiceMoreTest.emptyCspIsReportedAsMisconfigured(WebsiteCheckServiceMoreTest.java:185)
+
+E.g. thenReturn() may be missing.
+Examples of correct stubbing:
+    when(mock.isOk()).thenReturn(true);
+    when(mock.isOk()).thenThrow(exception);
+    doThrow(exception).when(mock).someVoidMethod();
+Hints:
+ 1. missing thenReturn()
+ 2. you are trying to stub a final method, which is not supported
+ 3. you are stubbing the behaviour of another mock inside before 'thenReturn' instruction is completed, possibly on another thread
+
+[ERROR]   WebsiteCheckServiceMoreTest.hstsMaxAgeZeroIsReportedAsMisconfigured:166->response:118 UnfinishedStubbing 
+Unfinished stubbing detected here:
+-> at com.shipshape.backend.service.WebsiteCheckServiceMoreTest.hstsMaxAgeZeroIsReportedAsMisconfigured(WebsiteCheckServiceMoreTest.java:165)
+
+E.g. thenReturn() may be missing.
+Examples of correct stubbing:
+    when(mock.isOk()).thenReturn(true);
+    when(mock.isOk()).thenThrow(exception);
+    doThrow(exception).when(mock).someVoidMethod();
+Hints:
+ 1. missing thenReturn()
+ 2. you are trying to stub a final method, which is not supported
+ 3. you are stubbing the behaviour of another mock inside before 'thenReturn' instruction is completed, possibly on another thread
+
+[ERROR]   WebsiteCheckServiceMoreTest.httpErrorResponseIsReachableAndReportsHttpStatusFailure:132->response:118 UnfinishedStubbing 
+Unfinished stubbing detected here:
+-> at com.shipshape.backend.service.WebsiteCheckServiceMoreTest.httpErrorResponseIsReachableAndReportsHttpStatusFailure(WebsiteCheckServiceMoreTest.java:131)
+
+E.g. thenReturn() may be missing.
+Examples of correct stubbing:
+    when(mock.isOk()).thenReturn(true);
+    when(mock.isOk()).thenThrow(exception);
+    doThrow(exception).when(mock).someVoidMethod();
+Hints:
+ 1. missing thenReturn()
+ 2. you are trying to stub a final method, which is not supported
+ 3. you are stubbing the behaviour of another mock inside before 'thenReturn' instruction is completed, possibly on another thread
+
+[ERROR]   WebsiteCheckServiceMoreTest.invalidXContentTypeOptionsIsReportedAsMisconfigured:176->response:118 UnfinishedStubbing 
+Unfinished stubbing detected here:
+-> at com.shipshape.backend.service.WebsiteCheckServiceMoreTest.invalidXContentTypeOptionsIsReportedAsMisconfigured(WebsiteCheckServiceMoreTest.java:175)
+
+E.g. thenReturn() may be missing.
+Examples of correct stubbing:
+    when(mock.isOk()).thenReturn(true);
+    when(mock.isOk()).thenThrow(exception);
+    doThrow(exception).when(mock).someVoidMethod();
+Hints:
+ 1. missing thenReturn()
+ 2. you are trying to stub a final method, which is not supported
+ 3. you are stubbing the behaviour of another mock inside before 'thenReturn' instruction is completed, possibly on another thread
+
+[INFO] 
+[ERROR] Tests run: 13, Failures: 4, Errors: 4, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  2.620 s
+[INFO] Finished at: 2026-11-25T02:19:27+03:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.6:test (default-test) on project backend: There are test failures.
+[ERROR] 
+[ERROR] See <repo>/backend/target/surefire-reports for the individual test results.
+[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

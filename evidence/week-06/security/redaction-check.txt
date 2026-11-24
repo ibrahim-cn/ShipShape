@@ -1,0 +1,13 @@
+Sanitized evidence checks
+=========================
+
+hunter2: ABSENT
+examplePassword: ABSENT
+secret123: ABSENT
+AKIA: ABSENT
+password=admin: ABSENT
+
+Notes
+=====
+Synthetic credentials from fixtures are allowed only in request fixtures under the temporary test directory and in backend/src/test/resources.
+API responses and Week 6 evidence were checked for raw secret values.

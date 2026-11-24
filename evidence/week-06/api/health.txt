@@ -1,0 +1,2 @@
+{"service":"shipshape-backend","status":"UP"}
+HTTP_STATUS=200

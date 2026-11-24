@@ -1,0 +1,2 @@
+COMMAND   PID    USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+java    97205 <user>   43u  IPv6 0x3d765280bd97ea83      0t0  TCP *:8080 (LISTEN)

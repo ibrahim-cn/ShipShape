@@ -1,0 +1,28 @@
+Performance summary
+====================
+
+NFR-01 verification used five different public URLs:
+- https://example.com
+- http://github.com
+- https://www.wikipedia.org
+- https://www.cloudflare.com
+- https://www.mozilla.org
+
+App-reported website responseTimeMs for those five:
+count=5
+values_ms=249, 433, 440, 439, 264
+min=249, max=440, mean=365.00, median=433.0
+
+Full curl total API latency for those five:
+values_seconds=0.307, 0.555, 0.460, 0.457, 0.284
+min=0.284, max=0.555, mean=0.413
+
+Target: 10 seconds. Observed maximum app-reported duration: 440 ms. Observed maximum full API latency: 555.0 ms. Result: PASS.
+
+Local analysis observations:
+dockerfile_correct_curl_total_seconds=0.004429
+project_correct_curl_total_seconds=0.030204
+project_risky_curl_total_seconds=0.005291
+
+Reported website responseTimeMs excludes local request/response serialization and network overhead; curl total is the full observed API latency.
+Low-volume observations only; no load test was performed.

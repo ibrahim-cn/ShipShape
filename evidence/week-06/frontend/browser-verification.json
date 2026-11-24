@@ -1,0 +1,67 @@
+{
+  "cases": [
+    {
+      "case": "initial_page",
+      "status": "PASS",
+      "expected": "Brand and both check tabs",
+      "actual": "SS | ShipShape |  | Pre-Deployment Readiness Checker |  | Check a website before deployment |  | Submit a public URL to verify that it is reachable and review its HTTP and security readiness. |  | Website Check | Dockerfile Analysis | Website",
+      "screenshot": "initial-page.png"
+    },
+    {
+      "case": "website_success",
+      "status": "PASS",
+      "expected": "Reachability, HTTP status, HTTPS, submitted/final scheme, response time, headers, findings",
+      "actual": "READINESS RESULT |  | Website readiness check needs attention | WARNING | Website Overview | SUBMITTED URL | https://example.com | REACHABILITY | Reachable | HTTP STATUS CODE | 200 | HTTPS | Enabled | SUBMITTED / FINAL SCHEME | https -> https | RESPONSE TIME | 21 ms | OVERALL READINESS | WARNING | Security Headers | 3 headers checked | Strict-Transport-Security | Missing | Content-Security-Policy | Missing | X-Content-Type-Options | Missing | Findings and Recommendations | 6 findings | Reachability | PASS |  | The website responded with an HTTP response. |  | Suggested action: No action required for network reachability. |  | HTTPS | PASS |  | The final connection uses HTTPS. |  | Suggested action: No action required. |  | Response Time | PASS |  | Response time is within acceptable range. |  | Suggested action: No action required. |  | Strict-Transport-Security | WARNING |  | Strict-Transport-Security header is missing. |  | Suggested action: Consider adding this security header for better protection. |  | Content-Security-Policy | WARNING |  | Content-Security-Policy header is missing. |  | Suggested acti",
+      "screenshot": "website-success.png"
+    },
+    {
+      "case": "website_blocked_url",
+      "status": "PASS",
+      "expected": "Host not allowed alert",
+      "actual": "Check failed | Host not allowed",
+      "screenshot": "website-blocked.png"
+    },
+    {
+      "case": "website_empty_validation",
+      "status": "PASS",
+      "expected": "Client-side empty URL validation",
+      "actual": "Enter a website URL to check."
+    },
+    {
+      "case": "dockerfile_success",
+      "status": "PASS",
+      "expected": "Dockerfile PASS result and findings",
+      "actual": "DOCKERFILE ANALYSIS |  | Dockerfile analysis passed | PASS | Analysis Summary | 8 findings | OVERALL RESULT | PASS | PASSED CHECKS | 8 | WARNINGS | 0 | FAILED CHECKS | 0 |  | Static text analysis only; the Dockerfile was not executed. |  | Findings and Recommendations | 8 findings | FROM Instruction | PASS |  | A FROM instruction with a readable base reference was found. |  | Suggested action: No action required for this structural rule. |  | Base Image Tag | PASS |  | An explicit non-latest base image tag was found. |  | Suggested action: Consider digest pinning for stronger immutability. |  | Final Stage User | PASS |  | The final stage chain explicitly configures a non-root user. |  | Suggested action: No action required for this rule. |  | Working Directory | PASS |  | An explicit WORKDIR was found in the final stage chain. |  | Suggested action: No action required for this rule. |  | Startup Command | PASS |  | An explicit CMD or ENTRYPOINT was found in the final stage chain. |  | Sug",
+      "screenshot": "dockerfile-success.png"
+    },
+    {
+      "case": "dockerfile_empty_validation",
+      "status": "PASS",
+      "expected": "Client-side empty Dockerfile validation",
+      "actual": "Paste Dockerfile content to analyze."
+    },
+    {
+      "case": "dockerfile_boundary_validation",
+      "status": "PASS",
+      "expected": "Client-side 100,000-character boundary",
+      "actual": "Dockerfile content must be 100,000 characters or fewer."
+    },
+    {
+      "case": "mobile_layout",
+      "status": "PASS",
+      "expected": "No horizontal overflow at 390x844",
+      "actual": "horizontal_overflow=False",
+      "screenshot": "mobile-initial.png"
+    }
+  ],
+  "console_messages": [
+    "debug: [vite] connecting...",
+    "debug: [vite] connected.",
+    "info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "error: Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "debug: [vite] connecting...",
+    "debug: [vite] connected.",
+    "info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+  ],
+  "page_errors": []
+}

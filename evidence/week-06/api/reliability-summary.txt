@@ -1,0 +1,9 @@
+Reliability check
+================
+
+health_after_error_batch_1: HTTP 200, 0.000993s, {"service":"shipshape-backend","status":"UP"}
+health_after_error_batch_2: HTTP 200, 0.000939s, {"service":"shipshape-backend","status":"UP"}
+health_after_error_batch_3: HTTP 200, 0.002827s, {"service":"shipshape-backend","status":"UP"}
+
+All negative and error-producing API cases returned valid JSON responses; no backend crash or 500 response was observed.
+The backend log contains no application exception stack trace during the API batch; see api/backend-run.log.

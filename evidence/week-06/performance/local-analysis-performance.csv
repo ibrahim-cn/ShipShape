@@ -1,0 +1,6 @@
+scenario,http_status,curl_total_seconds,overall_status
+dockerfile-correct,200,0.004636,PASS
+dockerfile-risky,200,0.002661,WARNING
+project-correct,200,0.031906,NOT_CHECKED
+project-risky,200,0.005307,FAIL
+project-unsupported-only,200,0.002836,NOT_CHECKED

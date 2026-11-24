@@ -1,0 +1,15 @@
+0f264bc docs(evidence): record Week 5 final verification
+9f836bd feat(dockerfile): add rule-based static analysis
+40fe98f fix(frontend): add favicon to prevent missing resource request
+aaa86fd feat(frontend): display complete website readiness analysis
+96b2c0c week 4 developments
+d0df580 align API design with implemented endpoints
+cb6de43 update README for Week 4 prototype.
+42b8185 implement Week 4 website check frontend
+3bf2e2f endpoints and test files were added.
+38844f0 AWS service selection files were added.
+a00f8f7 Add initial API design
+c6dd247 component design files were added.
+7b87e32 arthitecture files were added.
+4bec7a4 Update README.md
+506f78f Revise project timeline and deliverables in README
