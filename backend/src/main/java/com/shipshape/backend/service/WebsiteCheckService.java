@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class WebsiteCheckService {
@@ -28,9 +30,12 @@ public class WebsiteCheckService {
     private static final int MAX_REDIRECTS = 5;
     private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(5);
     private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(8);
+    private static final Pattern HSTS_MAX_AGE = Pattern.compile("(?:^|;)\\s*max-age\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);
 
     private final HttpClient httpClient;
     private final DnsResolver dnsResolver;
+    private final Duration requestTimeout;
+    private final Duration totalDeadline;
 
     public interface DnsResolver {
         InetAddress[] resolve(String host) throws Exception;
@@ -44,21 +49,25 @@ public class WebsiteCheckService {
     }
 
     public WebsiteCheckService() {
-        this.httpClient = HttpClient.newBuilder()
+        this(HttpClient.newBuilder()
                 .followRedirects(HttpClient.Redirect.NEVER)
                 .connectTimeout(CONNECT_TIMEOUT)
-                .build();
-        this.dnsResolver = new DefaultDnsResolver();
+                .build(), new DefaultDnsResolver(), REQUEST_TIMEOUT, Duration.ofSeconds(10));
     }
 
     public WebsiteCheckService(HttpClient httpClient) {
-        this.httpClient = httpClient;
-        this.dnsResolver = new DefaultDnsResolver();
+        this(httpClient, new DefaultDnsResolver(), REQUEST_TIMEOUT, Duration.ofSeconds(10));
     }
 
     public WebsiteCheckService(HttpClient httpClient, DnsResolver dnsResolver) {
+        this(httpClient, dnsResolver, REQUEST_TIMEOUT, Duration.ofSeconds(10));
+    }
+
+    WebsiteCheckService(HttpClient httpClient, DnsResolver dnsResolver, Duration requestTimeout, Duration totalDeadline) {
         this.httpClient = httpClient;
         this.dnsResolver = dnsResolver != null ? dnsResolver : new DefaultDnsResolver();
+        this.requestTimeout = requestTimeout;
+        this.totalDeadline = totalDeadline;
     }
 
     public WebsiteCheckResponse check(String url) {
@@ -75,6 +84,8 @@ public class WebsiteCheckService {
             throw new BadRequestException("Malformed URL");
         }
 
+        response.setSubmittedUrlScheme(currentUri.getScheme());
+        response.setFinalUrlScheme(currentUri.getScheme());
         response.setHttpsEnabled("https".equalsIgnoreCase(currentUri.getScheme()));
 
         boolean reachable = false;
@@ -90,17 +101,16 @@ public class WebsiteCheckService {
                 }
                 visited.add(currentUri.toString());
 
-                // re-validate before request (including resolved addresses)
+                Duration timeouts = remainingTimeout(startTime);
                 validateForRequest(currentUri);
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(currentUri)
-                        .timeout(REQUEST_TIMEOUT)
+                        .timeout(timeouts)
                         .method("GET", HttpRequest.BodyPublishers.noBody())
                         .header("User-Agent", "ShipShape-PreDeployment-Checker")
                         .build();
 
-                long reqStart = System.currentTimeMillis();
                 HttpResponse<Void> httpResponse;
                 try {
                     httpResponse = httpClient.send(request, HttpResponse.BodyHandlers.discarding());
@@ -116,15 +126,9 @@ public class WebsiteCheckService {
                     throw new BadRequestException("Request failed");
                 }
 
-                long reqEnd = System.currentTimeMillis();
-                if (response.getResponseTimeMs() == null) {
-                    response.setResponseTimeMs(reqEnd - reqStart);
-                } else {
-                    response.setResponseTimeMs(Math.max(response.getResponseTimeMs(), reqEnd - reqStart));
-                }
-
                 httpStatusCode = httpResponse.statusCode();
                 lastHeaders = httpResponse.headers();
+                reachable = true;
 
                 // Check for redirect
                 if (isRedirect(httpStatusCode)) {
@@ -146,7 +150,6 @@ public class WebsiteCheckService {
                     continue;
                 }
 
-                reachable = httpStatusCode >= 200 && httpStatusCode < 400;
                 break;
             }
 
@@ -161,10 +164,9 @@ public class WebsiteCheckService {
 
         response.setReachable(reachable);
         response.setHttpStatusCode(httpStatusCode);
-
-        if (response.getResponseTimeMs() == null && startTime > 0) {
-            response.setResponseTimeMs(System.currentTimeMillis() - startTime);
-        }
+        response.setFinalUrlScheme(currentUri.getScheme());
+        response.setHttpsEnabled("https".equalsIgnoreCase(currentUri.getScheme()));
+        response.setResponseTimeMs(System.currentTimeMillis() - startTime);
 
         // Check security headers
         List<HeaderCheckResult> headerResults = new ArrayList<>();
@@ -187,18 +189,28 @@ public class WebsiteCheckService {
                     "Verify the URL is correct and the server is accessible from public networks."));
         } else {
             findings.add(new Finding("Reachability", "PASS",
-                    "The website responded successfully.",
-                    "No action required."));
+                    "The website responded with an HTTP response.",
+                    "No action required for network reachability."));
+        }
+
+        if (httpStatusCode != null && httpStatusCode >= 400) {
+            findings.add(new Finding("HTTP Status", "FAIL",
+                    "The server responded with unsuccessful HTTP status " + httpStatusCode + ".",
+                    "Investigate the application or deployment configuration returning this status."));
+        } else if (httpStatusCode != null && httpStatusCode >= 300) {
+            findings.add(new Finding("HTTP Status", "WARNING",
+                    "The check ended with redirect status " + httpStatusCode + " without a usable destination.",
+                    "Verify that the redirect target is valid and reachable."));
         }
 
         if (response.isHttpsEnabled()) {
             findings.add(new Finding("HTTPS", "PASS",
-                    "The website uses HTTPS.",
+                    "The final connection uses HTTPS.",
                     "No action required."));
         } else {
             findings.add(new Finding("HTTPS", "FAIL",
-                    "The website does not use HTTPS.",
-                    "Use HTTPS to encrypt traffic between clients and the server."));
+                    "The final connection does not use HTTPS.",
+                    "Use HTTPS for the submitted URL and every redirect target."));
         }
 
         // Response time finding
@@ -224,14 +236,21 @@ public class WebsiteCheckService {
 
         // Headers
         for (HeaderCheckResult h : headerResults) {
-            if (h.isPresent()) {
-                findings.add(new Finding(h.getHeaderName(), "PASS",
-                        h.getHeaderName() + " header is present.",
-                        "No action required."));
-            } else {
+            if (!h.isPresent()) {
                 findings.add(new Finding(h.getHeaderName(), "WARNING",
                         h.getHeaderName() + " header is missing.",
                         "Consider adding this security header for better protection."));
+                continue;
+            }
+            String misconfiguration = headerMisconfiguration(h);
+            if (misconfiguration != null) {
+                findings.add(new Finding(h.getHeaderName(), "WARNING",
+                        h.getHeaderName() + " header is present but " + misconfiguration + ".",
+                        "Review the header value and update it to a safe configuration."));
+            } else {
+                findings.add(new Finding(h.getHeaderName(), "PASS",
+                        h.getHeaderName() + " header is present with an acceptable basic value.",
+                        "No action required for the checked value."));
             }
         }
 
@@ -242,6 +261,40 @@ public class WebsiteCheckService {
         response.setOverallStatus(overall);
 
         return response;
+    }
+
+    private String headerMisconfiguration(HeaderCheckResult header) {
+        String value = header.getValue() == null ? "" : header.getValue().trim();
+        if ("Strict-Transport-Security".equalsIgnoreCase(header.getHeaderName())) {
+            Matcher matcher = HSTS_MAX_AGE.matcher(value);
+            if (!matcher.find()) {
+                return "has no readable max-age directive";
+            }
+            try {
+                if (Long.parseLong(matcher.group(1)) <= 0) {
+                    return "has a zero max-age";
+                }
+            } catch (NumberFormatException ex) {
+                return "has an invalid max-age";
+            }
+            return null;
+        }
+        if ("X-Content-Type-Options".equalsIgnoreCase(header.getHeaderName())) {
+            return "nosniff".equalsIgnoreCase(value) ? null : "has an unrecognized value";
+        }
+        if ("Content-Security-Policy".equalsIgnoreCase(header.getHeaderName())) {
+            return value.isEmpty() || value.replace(";", "").trim().isEmpty()
+                    ? "has an empty or malformed policy" : null;
+        }
+        return null;
+    }
+
+    private Duration remainingTimeout(long startTime) {
+        long remaining = totalDeadline.toMillis() - (System.currentTimeMillis() - startTime);
+        if (remaining <= 0) {
+            throw new BadRequestException("Request exceeded total deadline");
+        }
+        return Duration.ofMillis(Math.min(requestTimeout.toMillis(), remaining));
     }
 
     private void validateForRequest(URI uri) {

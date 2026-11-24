@@ -16,6 +16,8 @@ export interface WebsiteCheckResponse {
   httpStatusCode: number | null
   responseTimeMs: number | null
   httpsEnabled: boolean
+  submittedUrlScheme?: string
+  finalUrlScheme?: string
   securityHeaders: HeaderCheckResult[]
   overallStatus: string
   findings: Finding[]

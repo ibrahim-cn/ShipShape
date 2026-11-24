@@ -41,6 +41,7 @@ function CheckResult({ result }: CheckResultProps) {
         ? 'Enabled'
         : 'Disabled'
       : 'Not available'
+  const schemeSummary = `${result.submittedUrlScheme || 'Not available'} -> ${result.finalUrlScheme || 'Not available'}`
   const reachabilityStatus =
     typeof result.reachable === 'boolean'
       ? result.reachable
@@ -81,6 +82,10 @@ function CheckResult({ result }: CheckResultProps) {
           <div className="result-item">
             <dt>HTTPS</dt>
             <dd>{httpsStatus}</dd>
+          </div>
+          <div className="result-item">
+            <dt>Submitted / final scheme</dt>
+            <dd className="mono">{schemeSummary}</dd>
           </div>
           <div className="result-item">
             <dt>Response time</dt>

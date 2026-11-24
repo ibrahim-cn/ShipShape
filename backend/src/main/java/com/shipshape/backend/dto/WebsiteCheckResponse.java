@@ -8,6 +8,8 @@ public class WebsiteCheckResponse {
     private Integer httpStatusCode;
     private Long responseTimeMs;
     private boolean httpsEnabled;
+    private String submittedUrlScheme;
+    private String finalUrlScheme;
     private List<HeaderCheckResult> securityHeaders;
     private String overallStatus;
     private List<Finding> findings;
@@ -53,6 +55,22 @@ public class WebsiteCheckResponse {
 
     public void setHttpsEnabled(boolean httpsEnabled) {
         this.httpsEnabled = httpsEnabled;
+    }
+
+    public String getSubmittedUrlScheme() {
+        return submittedUrlScheme;
+    }
+
+    public void setSubmittedUrlScheme(String submittedUrlScheme) {
+        this.submittedUrlScheme = submittedUrlScheme;
+    }
+
+    public String getFinalUrlScheme() {
+        return finalUrlScheme;
+    }
+
+    public void setFinalUrlScheme(String finalUrlScheme) {
+        this.finalUrlScheme = finalUrlScheme;
     }
 
     public List<HeaderCheckResult> getSecurityHeaders() {
