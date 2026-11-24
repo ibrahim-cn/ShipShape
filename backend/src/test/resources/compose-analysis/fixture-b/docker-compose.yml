@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:latest
+    user: root
+    environment:
+      DB_PASSWORD: hunter2
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    restart: unless-stopped
+  api:
+    image: registry.example.com/shipshape/api:1.4.0
+    user: root:root
+    privileged: true
+    network_mode: host
+    ports:
+      - "0.0.0.0:2375:2375"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /:/host:rw
+    restart: no
+  worker:
+    image: registry.example.com/shipshape/worker
+    user: ${WORKER_USER}
+    privileged: ${PRIVILEGED}
+    pid: host
+    ipc: host
+    ports:
+      - "[::]:6379:6379"
+    volumes:
+      - /etc:/etc:ro
+      - "${DATA_DIR}:/data"
+    env_file: .env
+    healthcheck:
+      disable: true
